@@ -1,0 +1,6 @@
+<form action="${login_url}" method="post">
+    <input type="text" name="openid_identifier" />
+    <button type="submit" class="btn btn-default">
+        <span>OpenID</span>
+    </button>
+</form>
