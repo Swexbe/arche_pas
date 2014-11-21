@@ -1,10 +1,19 @@
 from logging import getLogger
 
 from pyramid.i18n import TranslationStringFactory
+from pyramid.traversal import find_interface
+from arche.interfaces import IRoot
+
+from arche_pas.interfaces import IPluggableAuth
 
 
 logger = getLogger(__name__)
 _ = TranslationStringFactory('arche_pas')
+
+
+def get_providers(context, request):
+    root = find_interface(context, IRoot)
+    return request.registry.getAdapters([root, request], IPluggableAuth)
 
 
 def includeme(config):

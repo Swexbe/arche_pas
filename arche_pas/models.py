@@ -52,11 +52,14 @@ class BasePluggableAuth(object):
         self.context = context
         self.request = request
 
+    def login_url(self):
+        return login_url(self.request, self.name)
+
     def registration_url(self, **kw):
         return self.request.route_url('pas_register', provider_name = self.name, _query = kw)
 
     def render_login(self):
-        response = {'login_url': login_url(self.request, self.name),
+        response = {'login_url': self.login_url(),
                     'provider': self}
         return render(self.renderer, response, request = self.request)
 

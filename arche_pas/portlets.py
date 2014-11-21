@@ -1,8 +1,8 @@
 from pyramid.renderers import render
 from arche.portlets import PortletType
 
-from triart_site import _
-from arche_pas.interfaces import IPluggableAuth
+from arche_pas import get_providers
+from arche_pas import _
 
 
 class PASLoginPortlet(PortletType):
@@ -11,9 +11,7 @@ class PASLoginPortlet(PortletType):
 
     def render(self, context, request, view, **kwargs):
         if request.authenticated_userid is None:
-            #import pdb;pdb.set_trace()
-            adapters = [adapter for (name, adapter) in request.registry.getAdapters([view.root, request], IPluggableAuth)]
-            print adapters
+            adapters = [adapter for (name, adapter) in get_providers(context, request)]
             if adapters:
                 response = {'portlet': self.portlet,
                             'view': view,
