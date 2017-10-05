@@ -7,8 +7,9 @@ README = open(os.path.join(here, 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.rst')).read()
 
 requires = ('Arche',
-            'velruse',
+            'requests-oauthlib',
             'colander',
+            'pyramid>=1.6'
             )
 
 
@@ -25,7 +26,7 @@ setup(name='arche_pas',
         ],
       author='Robin Harms Oredsson and contributors',
       author_email='robin@betahaus.net',
-      url='',
+      url='https://github.com/ArcheProject/arche_pas',
       keywords='web pyramid pylons arche',
       packages=find_packages(),
       include_package_data=True,

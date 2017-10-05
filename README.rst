@@ -1,4 +1,4 @@
 Arche pluggable authentication service README
 =============================================
 
-Note: Discontinued!
+Service to use authentication with requests-oauthlib.

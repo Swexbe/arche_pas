@@ -1,16 +1,74 @@
-from velruse import login_url
+from requests_oauthlib import OAuth2Session
+from six import string_types
 
-from arche_pas.models import BaseOAuth2Plugin
+from arche_pas.models import PASProvider
 from arche_pas import _
 
 
-class GoogleOAuth2(BaseOAuth2Plugin):
-    name = 'google_oauth2'
-    title = _(u"Google")
+class GoogleOAuth2(PASProvider):
+    name = "google_oauth2"
+    title = _("Google")
+    id_key = 'id'
+    paster_config_ns = __name__
+    default_settings = {
+        "auth_uri":"https://accounts.google.com/o/oauth2/auth",
+        "token_uri":"https://accounts.google.com/o/oauth2/token",
+        "redirect_uri":"http://localhost:6543/pas_callback/google_oauth2",
+        "scope":["https://www.googleapis.com/auth/userinfo.email",
+                 "https://www.googleapis.com/auth/userinfo.profile"],
+        "profile_uri":"https://www.googleapis.com/oauth2/v1/userinfo",
+        "access_type":"offline",
+        "approval_prompt":"force"
+    }
 
-    def login_url(self):
-        return login_url(self.request, 'google')
+    @classmethod
+    def validate_settings(cls):
+        try:
+            assert isinstance(cls.settings, dict), \
+                "No configuration found for provider %r" % cls.name
+            assert isinstance(cls.settings.get('scope', None), list)
+            for str_k in ('client_id', 'project_id', 'auth_uri', 'token_uri', 'client_secret', 'redirect_uri'):
+                assert isinstance(cls.settings.get(str_k, None), string_types), \
+                    "Missing config key %r for provider %r" % (str_k, cls.name)
+        except AssertionError as exc:
+            raise cls.ProviderConfigError(exc.message)
+
+    def get_session(self):
+        return OAuth2Session(self.settings['client_id'],
+                             scope=self.settings['scope'],
+                             redirect_uri=self.settings['redirect_uri'])
+
+    def begin(self, request):
+        # OAuth endpoints given in the Google API documentation
+        google = self.get_session()
+        authorization_url, state = google.authorization_url(self.settings['auth_uri'],
+                                                            access_type=self.settings['access_type'],
+                                                            approval_prompt=self.settings['approval_prompt'])
+        return authorization_url
+
+    def callback(self, request):
+        google = self.get_session()
+        #Should we do anything with the token response? Auth is handled by Arche anyway.
+        #We should probably store the image url
+        res =  google.fetch_token(self.settings['token_uri'],
+                                  client_secret=self.settings['client_secret'],
+                                  authorization_response=request.url)
+        profile_response = google.get(self.settings['profile_uri'])
+        profile_data = profile_response.json()
+        return profile_data
+
+    def get_validated_email(self, response):
+        if response.get('verified_email', False):
+            email = response.get('email', None)
+            if email:
+                return email
+
+    def registration_appstruct(self, response):
+        return dict(
+            first_name = response.get('given_name', ''),
+            last_name = response.get('family_name', '')
+        )
 
 
 def includeme(config):
-    config.registry.registerAdapter(GoogleOAuth2, name = GoogleOAuth2.name)
+    config.add_pas(GoogleOAuth2)
