@@ -1,49 +1,28 @@
+import deform
 from arche.events import ObjectUpdatedEvent
 from arche.interfaces import IUser
-from arche.security import NO_PERMISSION_REQUIRED, PERM_EDIT
+from arche.security import PERM_EDIT
 from arche.utils import get_content_schemas
 from arche.views.base import BaseForm, BaseView
-from arche_pas.interfaces import IPASProvider, IProviderData
-from pyramid.httpexceptions import HTTPForbidden, HTTPBadRequest, HTTPNotFound
+from pyramid.httpexceptions import HTTPBadRequest
+from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
-from pyramid.security import remember
-import deform
-
-from arche_pas import  _
-#from arche_pas.exceptions import UserNotFoundError
-#from arche_pas.interfaces import IPluggableAuth
-#from arche_pas.models import get_auth_info
+from pyramid.httpexceptions import HTTPNotFound
 from six import string_types
 from zope.component.event import objectEventNotify
 from zope.interface.interfaces import ComponentLookupError
 
-
-def includeme(config):
-    config.add_route('pas_begin', '/pas_begin/{provider}')
-    config.add_view(BeginAuthView, route_name = 'pas_begin')
-    config.add_route('pas_callback', '/pas_callback/{provider}')
-    config.add_view(CallbackAuthView, route_name = 'pas_callback')
-    config.add_route('pas_register', '/pas_register/{provider}/{reg_id}')
-    config.add_view(RegisterPASForm, route_name = 'pas_register', renderer='arche:templates/form.pt')
-    config.add_view(RemovePASDataForm, context=IUser, name='remove_pas', renderer='arche:templates/form.pt', permission=PERM_EDIT)
-    # config.add_view(logged_in,
-    #                 route_name = 'pas_logged_in')
-    # config.add_route('pas_logged_in', '/__pas_logged_in__')
-    # config.add_view(RegisterPASView,
-    #                 route_name = 'pas_register',
-    #                 renderer = "arche:templates/form.pt")
-    # config.add_route('pas_register', '/__pas_register__/{provider_name}')
-    # #FIXME: Add any other  generic badness...
-    # config.add_view(exception_view, context = 'openid.yadis.discover.DiscoveryFailure', permission = NO_PERMISSION_REQUIRED)
-    # config.add_view(exception_view, context = 'velruse.exceptions.VelruseException', permission = NO_PERMISSION_REQUIRED)
+from arche_pas import _
+from arche_pas.interfaces import IPASProvider
+from arche_pas.interfaces import IProviderData
 
 
 class BeginAuthView(BaseView):
 
     def __call__(self):
         provider_name = self.request.matchdict.get('provider', '')
-        provider = self.request.registry.queryAdapter(self.context, IPASProvider, name = provider_name)
-        return HTTPFound(location=provider.begin(self.request))
+        provider = self.request.registry.queryAdapter(self.request, IPASProvider, name = provider_name)
+        return HTTPFound(location=provider.begin())
 
 
 class CallbackAuthView(BaseView):
@@ -51,22 +30,22 @@ class CallbackAuthView(BaseView):
     def __call__(self):
         #FIXME: Handle ALL provider exceptions here!
         provider_name = self.request.matchdict.get('provider', '')
-        provider = self.request.registry.queryAdapter(self.context, IPASProvider, name = provider_name)
+        provider = self.request.registry.queryAdapter(self.request, IPASProvider, name = provider_name)
         #FIXME: Redirect when a user is logged in and ask about attaching accounts?
-        profile_data = provider.callback(self.request)
+        profile_data = provider.callback()
         user_ident = profile_data.get(provider.id_key, None)
         if not user_ident:
             raise HTTPBadRequest("Profile response didn't contain a user identifier.")
-        user = provider.get_user(self.request, user_ident)
+        user = provider.get_user(user_ident)
         if user:
             print "CALLBACK LOGIN"
             self.flash_messages.add(_("Logged in via ${provider}",
                                       mapping={'provider': self.request.localizer.translate(provider.title)}),
                                     type='success')
-            return provider.login(user, self.request)
+            return provider.login(user)
         else:
             print "CALLBACK REGISTER"
-            reg_response = provider.prepare_register(self.request, profile_data)
+            reg_response = provider.prepare_register(profile_data)
             if isinstance(reg_response, string_types):
                 return HTTPFound(
                     location = self.request.route_url('pas_register',
@@ -96,7 +75,7 @@ class RegisterPASForm(BaseForm):
     def provider(self):
         provider_name = self.request.matchdict.get('provider', '')
         try:
-            return self.request.registry.getAdapter(self.context, IPASProvider, name = provider_name)
+            return self.request.registry.getAdapter(self.request, IPASProvider, name = provider_name)
         except ComponentLookupError:
             raise HTTPNotFound("No provider named %s" % provider_name)
 
@@ -133,7 +112,7 @@ class RegisterPASForm(BaseForm):
         self.provider.store(user, self.provider_response)
         self.flash_messages.add(_("Welcome, you're now registered!"), type="success")
         self.request.session.pop(self.reg_id, None)
-        return self.provider.login(user, self.request, first_login = True, came_from = redirect_url)
+        return self.provider.login(user, first_login = True, came_from = redirect_url)
 
 
 class RemovePASDataForm(BaseForm):
@@ -157,45 +136,14 @@ class RemovePASDataForm(BaseForm):
             self.flash_messages.add(_("Removed successfully"), type='success')
         return HTTPFound(location=self.request.resource_url(self.context))
 
-# def _try_to_add_error(request, msg):
-#     fm = request.registry.queryAdapter(request, IFlashMessages)
-#     if fm:
-#         msg = _(u"third_party_login_error",
-#                  default="A third party request caused an error: '${msg}'",
-#                  mapping={'msg': msg})
-#         fm.add(msg, type = 'error')
-#
-# def exception_view(context, request):
-#     _try_to_add_error(request, context.message)
-#     return HTTPFound(location = "/")
-#
-# def logged_in(context, request):
-#     """ Handle login through another service. Note that this is not the same as a local login.
-#         A cookie still needs to be set. Also, it's possible to run this method for a user that's
-#         already logged in locally, ie wanting to connect to a another service to use it as auth.
-#     """
-#     userid = request.authenticated_userid
-#     auth_info = get_auth_info(request)
-#     if not auth_info:
-#         raise HTTPForbidden("No auth session in progress")
-#     if 'error' in auth_info:
-#         _try_to_add_error(request, auth_info['error'])
-#         return HTTPFound(location = "/")
-#     auth_method = request.registry.queryMultiAdapter((context, request),
-#                                                      IPluggableAuth,
-#                                                      name = auth_info['provider_type'])
-#     if not auth_method:
-#         raise HTTPForbidden("There's no login provider called '%s'" % auth_info['provider_type'])
-#     if not userid:
-#         appstruct = auth_method.appstruct(auth_info)
-#         try:
-#             return auth_method.login(appstruct)
-#         except UserNotFoundError:
-#             #May need to register?
-#             url = auth_method.registration_url(token = request.params['token'])
-#             return HTTPFound(location = url)
-#     else:
-#         user = context['users'][userid]
-#         auth_method.set_auth_domain(user, auth_info['provider_type'])
-#         url = request.resource_url(context)
-#         return HTTPFound(location = url)
+
+def includeme(config):
+    config.add_route('pas_begin', '/pas_begin/{provider}')
+    config.add_view(BeginAuthView, route_name='pas_begin')
+    config.add_route('pas_callback', '/pas_callback/{provider}')
+    config.add_view(CallbackAuthView, route_name='pas_callback')
+    config.add_route('pas_register', '/pas_register/{provider}/{reg_id}')
+    config.add_view(RegisterPASForm, route_name='pas_register',
+                    renderer='arche:templates/form.pt')
+    config.add_view(RemovePASDataForm, context=IUser, name='remove_pas',
+                    renderer='arche:templates/form.pt', permission=PERM_EDIT)

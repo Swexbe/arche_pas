@@ -1,7 +1,8 @@
 import unittest
 
 from BTrees.OOBTree import OOBTree
-from arche.interfaces import IUser, IObjectUpdatedEvent
+from arche.interfaces import IObjectUpdatedEvent
+from arche.interfaces import IUser
 from arche.testing import barebone_fixture
 from pyramid import testing
 from zope.interface.verify import verifyObject
@@ -56,7 +57,7 @@ class PASProviderTests(unittest.TestCase):
         class DummyProvider(self._cut):
             name = 'dummy'
             title = 'Wakka'
-            _settings = None
+            settings = None
             id_key = 'dummy_key'
             default_settings = {'one': 1}
             @classmethod
@@ -66,8 +67,8 @@ class PASProviderTests(unittest.TestCase):
         return DummyProvider
 
     def test_verify_object(self):
-        context = testing.DummyModel()
-        self.failUnless(verifyObject(IPASProvider, self._cut(context)))
+        request = testing.DummyRequest()
+        self.failUnless(verifyObject(IPASProvider, self._cut(request)))
 
     def test_verify_class(self):
         self.failUnless(verifyClass(IPASProvider, self._cut))
@@ -97,6 +98,7 @@ class PASProviderTests(unittest.TestCase):
         self.config.include('arche_pas')
         root = barebone_fixture(self.config)
         request = testing.DummyRequest()
+        self.config.begin(request)
         apply_request_extensions(request)
         request.root = root
         user = User()
@@ -108,8 +110,8 @@ class PASProviderTests(unittest.TestCase):
         query = "pas_ident == ('dummy', 'very_secret')"
         docids = root.catalog.query(query)[1]
         self.assertEqual(tuple(request.resolve_docids(docids))[0], user)
-        obj = provider(root)
-        self.assertEqual(obj.get_user(request, 'very_secret'), user)
+        obj = provider(request)
+        self.assertEqual(obj.get_user('very_secret'), user)
 
     # def prepare_register(self, request, data):
     #
@@ -123,6 +125,7 @@ class PASProviderTests(unittest.TestCase):
         request = testing.DummyRequest()
         apply_request_extensions(request)
         request.root = root
+        self.config.begin(request)
         user = User()
         provider_data = IProviderData(user)
         provider_data['dummy'] = {'dummy_key': 'very_secret'}

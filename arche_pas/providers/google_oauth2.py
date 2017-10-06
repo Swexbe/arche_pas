@@ -32,26 +32,26 @@ class GoogleOAuth2(PASProvider):
         except AssertionError as exc:
             raise cls.ProviderConfigError(exc.message)
 
-    def get_session(self, request):
+    def get_session(self):
         return OAuth2Session(self.settings['client_id'],
                              scope=self.settings['scope'],
-                             redirect_uri=self.callback_url(request))
+                             redirect_uri=self.callback_url())
 
-    def begin(self, request):
+    def begin(self):
         # OAuth endpoints given in the Google API documentation
-        google = self.get_session(request)
+        google = self.get_session()
         authorization_url, state = google.authorization_url(self.settings['auth_uri'],
                                                             access_type=self.settings['access_type'],
                                                             approval_prompt=self.settings['approval_prompt'])
         return authorization_url
 
-    def callback(self, request):
-        google = self.get_session(request)
+    def callback(self):
+        google = self.get_session()
         #Should we do anything with the token response? Auth is handled by Arche anyway.
         #We should probably store the image url
         res =  google.fetch_token(self.settings['token_uri'],
                                   client_secret=self.settings['client_secret'],
-                                  authorization_response=request.url)
+                                  authorization_response=self.request.url)
         profile_response = google.get(self.settings['profile_uri'])
         profile_data = profile_response.json()
         return profile_data

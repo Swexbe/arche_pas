@@ -11,6 +11,7 @@ from arche.interfaces import IFlashMessages
 from arche.interfaces import IRoot
 from arche.interfaces import IUser
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
+from pyramid.interfaces import IRequest
 from pyramid.security import remember
 from zope.component import adapter
 from zope.component.event import objectEventNotify
@@ -54,7 +55,7 @@ class ProviderData(IterableUserDict):
 #Skriv så det är objektet som registreras som adapter och sedan ropas på istället vid adaptering
 
 @implementer(IPASProvider)
-@adapter(IRoot)
+@adapter(IRequest)
 class PASProvider(object):
     name = ''
     title = ''
@@ -64,8 +65,8 @@ class PASProvider(object):
     paster_config_ns = ''
     ProviderConfigError = ProviderConfigError
 
-    def __init__(self, context):
-        self.context = context
+    def __init__(self, request):
+        self.request = request
 
     @classmethod
     def update_settings(cls, dictobj=None, **kw):
@@ -80,32 +81,32 @@ class PASProvider(object):
     def validate_settings(cls): #pragma: no coverage
         pass
 
-    def begin(self, request):
+    def begin(self):
         return ""
 
-    def callback(self, request):
+    def callback(self):
         return {}
 
-    def callback_url(self, request):
+    def callback_url(self):
         """ Same as redirect_uri for some providers """
-        return request.route_url('pas_callback', provider=self.name)
+        return self.request.route_url('pas_callback', provider=self.name)
 
     def get_id(self, user):
         provider_data = IProviderData(user)
         return provider_data.get(self.name, {}).get(self.id_key, None)
 
-    def get_user(self, request, user_ident):
+    def get_user(self, user_ident):
         query = "pas_ident == %s and type_name == 'User'" % str((self.name, user_ident))
-        docids = self.context.catalog.query(query)[1]
-        for obj in request.resolve_docids(docids, perm = None):
+        docids = self.request.root.catalog.query(query)[1]
+        for obj in self.request.resolve_docids(docids, perm = None):
             if IUser.providedBy(obj):
                 return obj
 
-    def prepare_register(self, request, data):
+    def prepare_register(self, data):
         #Figure out if a user with that email validated already exists
         validated_email = self.get_validated_email(data)
         #FIXME: Handle cases where email ISN'T validated
-        user = self.context['users'].get_user_by_email(validated_email, only_validated=False)
+        user = self.request.root['users'].get_user_by_email(validated_email, only_validated=False)
         if user:
             if user.email_validated == False:
                 msg = _("user_found_without_validated_address",
@@ -115,25 +116,25 @@ class PASProvider(object):
                                   "then tie this login provider to your account.")
                 raise HTTPForbidden(msg)
             self.store(user, data)
-            fm = IFlashMessages(request)
+            fm = IFlashMessages(self.request)
             msg = _("data_tied_at_login",
                     default="Since you already had an account with the same email address validated, "
                             "you've been logged in as that user. Your accounts have also been linked.")
             fm.add(msg, type="success", auto_destruct=False)
             #Will return a HTTP 302
-            return self.login(user, request)
+            return self.login(user)
         #Register
         reg_id = str(uuid4())
         #Hash data to provide checksum?
-        request.session[reg_id] = data
+        self.request.session[reg_id] = data
         #Register this user
         return reg_id
 
-    def login(self, user, request, first_login = False, came_from = None):
-        event = WillLoginEvent(user, request = request, first_login = first_login)
-        request.registry.notify(event)
-        headers = remember(request, user.userid)
-        url = came_from and came_from or request.resource_url(self.context)
+    def login(self, user, first_login = False, came_from = None):
+        event = WillLoginEvent(user, request = self.request, first_login = first_login)
+        self.request.registry.notify(event)
+        headers = remember(self.request, user.userid)
+        url = came_from and came_from or self.request.resource_url(self.request.root)
         return HTTPFound(url, headers = headers)
 
     def store(self, user, data):

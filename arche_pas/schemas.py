@@ -18,11 +18,10 @@ def remove_pw_option_if_pw_not_set(schema, event):
 def providers_to_remove_widget(node, kw):
     context = kw['context']
     request = kw['request']
-    root = find_root(context)
     provider_data = IProviderData(context)
     values = []
     for name in provider_data:
-        provider = request.registry.queryAdapter(root, IPASProvider, name = name)
+        provider = request.registry.queryAdapter(request, IPASProvider, name = name)
         if provider:
             values.append((name, provider.title))
         else:

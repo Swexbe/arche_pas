@@ -1,6 +1,5 @@
 from arche.interfaces import IUser
-from pyramid.threadlocal import get_current_registry
-from pyramid.traversal import find_root
+from pyramid.threadlocal import get_current_request
 from repoze.catalog.indexes.keyword import CatalogKeywordIndex
 
 from arche_pas.interfaces import IPASProvider
@@ -13,12 +12,12 @@ def get_pas_ident(context, default):
     """
     if not IUser.providedBy(context):
         return default
-    root = find_root(context)
-    registry = get_current_registry()
+    request  = get_current_request()
+    registry = request.registry
     results = []
     for ar in registry.registeredAdapters():
         if ar.provided == IPASProvider:
-           pas_provider = registry.queryAdapter(root, IPASProvider, name = ar.name)
+           pas_provider = registry.queryAdapter(request, IPASProvider, name = ar.name)
            pas_id = pas_provider.get_id(context)
            if pas_id:
                results.append((pas_provider.name, pas_id))

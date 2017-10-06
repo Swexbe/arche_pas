@@ -31,28 +31,25 @@ class IPASProvider(Interface):
         :param user: User object
         """
 
-    def get_user(request, user_ident):
+    def get_user(user_ident):
         """ Get any user registered with this identifier.
 
-        :param request:
         :param user_ident: Unique identifier for user.
         :return: User object or None
         """
 
-    def prepare_register(request, data):
+    def prepare_register(data):
         """
         Either tie an existing user with the same validated email address
         or redirect to registration form.
 
-        :param request:
         :param data: Response data from provider
         :return: HTTPFound, maybe with login headers
         """
 
-    def login(user, request, first_login = False, came_from = None):
+    def login(user, first_login = False, came_from = None):
         """
         :param user: User object
-        :param request:
         :param first_login: True for users first login. Shouldn't be true when a provider is tied to an existing account.
         :param came_from: Redirect here after login.
         :return: HTTPFound with login headers
