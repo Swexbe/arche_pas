@@ -8,11 +8,11 @@ from UserDict import IterableUserDict
 from arche.events import ObjectUpdatedEvent
 from arche.events import WillLoginEvent
 from arche.interfaces import IFlashMessages
-from arche.interfaces import IRoot
 from arche.interfaces import IUser
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 from pyramid.interfaces import IRequest
 from pyramid.security import remember
+from six import string_types
 from zope.component import adapter
 from zope.component.event import objectEventNotify
 from zope.interface import implementer
@@ -79,7 +79,15 @@ class PASProvider(object):
 
     @classmethod
     def validate_settings(cls): #pragma: no coverage
-        pass
+        try:
+            assert isinstance(cls.settings, dict), \
+                "No configuration found for provider %r" % cls.name
+            for str_k in ('client_id', 'auth_uri', 'token_uri', 'client_secret'):
+                assert isinstance(cls.settings.get(str_k, None), string_types), \
+                    "Missing config key %r for provider %r" % (str_k, cls.name)
+        except AssertionError as exc:
+            raise cls.ProviderConfigError(exc.message)
+
 
     def begin(self):
         return ""
