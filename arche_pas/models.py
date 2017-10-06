@@ -67,9 +67,6 @@ class PASProvider(object):
     def __init__(self, context):
         self.context = context
 
-    def __call__(self, context):
-        self.context = context
-
     @classmethod
     def update_settings(cls, dictobj=None, **kw):
         if cls.settings is None:
@@ -88,6 +85,10 @@ class PASProvider(object):
 
     def callback(self, request):
         return {}
+
+    def callback_url(self, request):
+        """ Same as redirect_uri for some providers """
+        return request.route_url('pas_callback', provider=self.name)
 
     def get_id(self, user):
         provider_data = IProviderData(user)

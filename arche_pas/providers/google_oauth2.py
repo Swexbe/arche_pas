@@ -13,7 +13,6 @@ class GoogleOAuth2(PASProvider):
     default_settings = {
         "auth_uri":"https://accounts.google.com/o/oauth2/auth",
         "token_uri":"https://accounts.google.com/o/oauth2/token",
-        "redirect_uri":"http://localhost:6543/pas_callback/google_oauth2",
         "scope":["https://www.googleapis.com/auth/userinfo.email",
                  "https://www.googleapis.com/auth/userinfo.profile"],
         "profile_uri":"https://www.googleapis.com/oauth2/v1/userinfo",
@@ -27,27 +26,27 @@ class GoogleOAuth2(PASProvider):
             assert isinstance(cls.settings, dict), \
                 "No configuration found for provider %r" % cls.name
             assert isinstance(cls.settings.get('scope', None), list)
-            for str_k in ('client_id', 'project_id', 'auth_uri', 'token_uri', 'client_secret', 'redirect_uri'):
+            for str_k in ('client_id', 'project_id', 'auth_uri', 'token_uri', 'client_secret'):
                 assert isinstance(cls.settings.get(str_k, None), string_types), \
                     "Missing config key %r for provider %r" % (str_k, cls.name)
         except AssertionError as exc:
             raise cls.ProviderConfigError(exc.message)
 
-    def get_session(self):
+    def get_session(self, request):
         return OAuth2Session(self.settings['client_id'],
                              scope=self.settings['scope'],
-                             redirect_uri=self.settings['redirect_uri'])
+                             redirect_uri=self.callback_url(request))
 
     def begin(self, request):
         # OAuth endpoints given in the Google API documentation
-        google = self.get_session()
+        google = self.get_session(request)
         authorization_url, state = google.authorization_url(self.settings['auth_uri'],
                                                             access_type=self.settings['access_type'],
                                                             approval_prompt=self.settings['approval_prompt'])
         return authorization_url
 
     def callback(self, request):
-        google = self.get_session()
+        google = self.get_session(request)
         #Should we do anything with the token response? Auth is handled by Arche anyway.
         #We should probably store the image url
         res =  google.fetch_token(self.settings['token_uri'],
