@@ -50,13 +50,19 @@ class WPOauth2(PASProvider):
     def get_email(self, response, validated=False):
         email = response.get('user_email', None)
         if email:
-            return email
+            #Email validation doesn't seem to be part of WP?
+            if not validated:
+                return email
 
     def registration_appstruct(self, response):
         names = response.get('display_name', "").split()
+        email = self.get_email(response)
+        if not email:
+            email = ''
         return dict(
             first_name = " ".join(names[:1]),
-            last_name = " ".join(names[1:])
+            last_name = " ".join(names[1:]),
+            email = email,
         )
 
 
