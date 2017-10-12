@@ -32,6 +32,7 @@ class CallbackAuthView(BaseView):
         provider_name = self.request.matchdict.get('provider', '')
         provider = self.request.registry.queryAdapter(self.request, IPASProvider, name = provider_name)
         #FIXME: Redirect when a user is logged in and ask about attaching accounts?
+        #FIXME: Handle exceptions here
         profile_data = provider.callback()
         user_ident = profile_data.get(provider.id_key, None)
         if not user_ident:
@@ -104,9 +105,8 @@ class RegisterPASForm(BaseForm):
         factory = self.request.content_factories['User']
         userid = appstruct.pop('userid')
         redirect_url = appstruct.pop('came_from', None)
-        email = self.provider.get_validated_email(self.provider_response)
-        if not email:
-            raise HTTPBadRequest("No validated email from provider")
+        email = self.provider.get_email(self.provider_response)
+        #FIXME: Flag for validated email
         user = factory(email = email, **appstruct)
         self.context['users'][userid] = user
         self.provider.store(user, self.provider_response)
@@ -115,8 +115,55 @@ class RegisterPASForm(BaseForm):
         return self.provider.login(user, first_login = True, came_from = redirect_url)
 
 
+class ConfirmLinkAccountPASForm(BaseForm):
+    type_name = 'PAS'
+    schema_name = 'link_data'
+    title = _("Link account?")
+
+    @property
+    def buttons(self):
+        return (deform.Button('link', title = _("Link account"),), #css_class = 'btn btn-success'
+                self.button_cancel,)
+
+    def __init__(self, context, request):
+        super(ConfirmLinkAccountPASForm, self).__init__(context, request)
+        if not request.authenticated_userid:
+            raise HTTPForbidden(_("You need to be logged in to link an account"))
+        self.provider_response #To provoke test
+
+    @property
+    def provider(self):
+        provider_name = self.request.matchdict.get('provider', '')
+        try:
+            return self.request.registry.getAdapter(self.request, IPASProvider, name = provider_name)
+        except ComponentLookupError:
+            raise HTTPNotFound("No provider named %s" % provider_name)
+
+    @property
+    def reg_id(self):
+        return self.request.matchdict.get('reg_id', '')
+
+    @property
+    def provider_response(self):
+        data = self.request.session.get(self.reg_id, None)
+        if not data:
+            raise HTTPBadRequest("No session data found from provider. You may need to restart the procedure.")
+        return data
+
+    def link_success(self, appstruct):
+        self.provider.store(self.request.profile, self.provider_response)
+    #     #FIXME: Flag for validated email
+        #FIXME: Decide about overwrite of email
+        provider_title = self.request.localizer.translate(self.provider.title)
+        self.flash_messages.add(_("You may now login with ${provider_title}.",
+                                  mapping={'provider_title': provider_title}),
+                                type="success")
+        self.request.session.pop(self.reg_id, None)
+        return HTTPFound(location=self.request.resource_url(self.context))
+
+
 class RemovePASDataForm(BaseForm):
-    type_name = u'PAS'
+    type_name = 'PAS'
     schema_name = 'remove_data'
 
     @property
@@ -147,3 +194,6 @@ def includeme(config):
                     renderer='arche:templates/form.pt')
     config.add_view(RemovePASDataForm, context=IUser, name='remove_pas',
                     renderer='arche:templates/form.pt', permission=PERM_EDIT)
+    config.add_route('pas_link', '/pas_link/{provider}/{reg_id}')
+    config.add_view(ConfirmLinkAccountPASForm, route_name='pas_link',
+                    renderer='arche:templates/form.pt')

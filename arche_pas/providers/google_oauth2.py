@@ -10,6 +10,7 @@ class GoogleOAuth2(PASProvider):
     title = _("Google")
     id_key = 'id'
     paster_config_ns = __name__
+    trust_email = True
     default_settings = {
         "auth_uri":"https://accounts.google.com/o/oauth2/auth",
         "token_uri":"https://accounts.google.com/o/oauth2/token",
@@ -56,10 +57,13 @@ class GoogleOAuth2(PASProvider):
         profile_data = profile_response.json()
         return profile_data
 
-    def get_validated_email(self, response):
-        if response.get('verified_email', False):
-            email = response.get('email', None)
-            if email:
+    def get_email(self, response, validated=False):
+        email = response.get('email', None)
+        if email:
+            if validated:
+                if response.get('verified_email', False):
+                    return email
+            else:
                 return email
 
     def registration_appstruct(self, response):

@@ -1,7 +1,6 @@
 import colander
 import deform
 from arche.interfaces import ISchemaCreatedEvent
-from pyramid.traversal import find_root
 
 from arche_pas import _
 from arche_pas.interfaces import IPASProvider
@@ -30,6 +29,19 @@ def providers_to_remove_widget(node, kw):
     return deform.widget.CheckboxChoiceWidget(values = values)
 
 
+def confirm_validator(node, value):
+    if not value:
+        raise colander.Invalid(node, _("Must be checked"))
+
+
+class LinkPASDataSchema(colander.Schema):
+    confirm = colander.SchemaNode(
+        colander.Bool(),
+        title = _("Are you sure?"),
+        validator = confirm_validator,
+    )
+
+
 class RemovePASDataSchema(colander.Schema):
     remove_password = colander.SchemaNode(
         colander.Bool(),
@@ -52,5 +64,6 @@ class RemovePASDataSchema(colander.Schema):
 
 
 def includeme(config):
-    config.add_content_schema('PAS', RemovePASDataSchema, 'remove_data')
+    config.add_schema('PAS', RemovePASDataSchema, 'remove_data')
+    config.add_schema('PAS', LinkPASDataSchema, 'link_data')
     config.add_subscriber(remove_pw_option_if_pw_not_set, [RemovePASDataSchema, ISchemaCreatedEvent])
