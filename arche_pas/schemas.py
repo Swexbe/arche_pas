@@ -37,7 +37,7 @@ def confirm_validator(node, value):
 class LinkPASDataSchema(colander.Schema):
     confirm = colander.SchemaNode(
         colander.Bool(),
-        title = _("Are you sure?"),
+        title = _("Confirm"),
         validator = confirm_validator,
     )
 

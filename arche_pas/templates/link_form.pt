@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view.macro('arche:templates/master.pt', 'arche:templates/inline.pt')"
+  i18n:domain="arche_pas">
+<h1 i18n:translate="">Link your accounts?</h1>
+
+<tal:content metal:fill-slot="content">
+
+    <h1 i18n:translate="">Link your account?</h1>
+
+    <p i18n:translate="link_accounts_description">You're logged in as
+        <b i18n:name="userid">${request.authenticated_userid}</b> here.
+        If you link your accounts you will be able to login via
+        <b i18n:name="provider_title">${view.provider.title}</b>.
+    </p>
+
+    <form tal:replace="structure form"/>
+
+</tal:content>
+</html>

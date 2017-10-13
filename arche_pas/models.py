@@ -10,7 +10,6 @@ from arche.events import WillLoginEvent
 from arche.interfaces import IFlashMessages
 from arche.interfaces import IUser
 from pyramid.httpexceptions import HTTPFound
-from pyramid.httpexceptions import HTTPForbidden
 from pyramid.interfaces import IRequest
 from pyramid.security import remember
 from pyramid.threadlocal import get_current_registry
@@ -22,6 +21,7 @@ from zope.interface import implementer
 from arche_pas import _
 from arche_pas import logger
 from arche_pas.exceptions import ProviderConfigError
+from arche_pas.exceptions import RegistrationCaseMissmatch
 from arche_pas.interfaces import IProviderData
 from arche_pas.interfaces import IPASProvider
 from arche_pas.interfaces import IRegistrationCase
@@ -51,10 +51,6 @@ class ProviderData(IterableUserDict):
         return '<%s adapting %s containing %s items>' % (classname,
                                                    self.context,
                                                    len(self))
-
-
-class RegistrationCaseMissmatch(Exception):
-    pass
 
 
 @implementer(IRegistrationCase)
@@ -211,6 +207,7 @@ class PASProvider(object):
         self.logger.debug("prepare_register called with data %s", data)
         reg_case_params = self.build_reg_case_params(data)
         reg_case = get_register_case(registry=self.request.registry, **reg_case_params)
+        self.logger.debug("Got registration case util: %s", reg_case.name)
         #Really returned?
         email = self.get_email(data)
         if email:
@@ -270,7 +267,6 @@ def callback_case_1(provider, user, data):
                     "you've been logged in as that user. Your accounts have also been linked.")
     fm.add(msg, type="success", auto_destruct=False)
     # Will return a HTTP 302
-    #provider.logger.debug("Case 1 successful")
     return provider.login(user)
 
 
@@ -282,7 +278,6 @@ def callback_case_2(provider, user, data):
             default="You've linked your external login to this account.")
     fm.add(msg, type="success", auto_destruct=False)
     # Will return a HTTP 302
-    #self.logger.debug("Case 2 successful")
     return provider.login(user)
 
 
@@ -291,18 +286,17 @@ def callback_must_be_logged_in(provider, user, data):
     msg = _("user_email_present",
             default="There's already a user registered here with your email address: '${email}' "
                     "If this is your account, please login here first to "
-                    "connect the two accounts. If you don't have the password, "
-                    "you may request a new password to be set on the login page.",
+                    "connect the two accounts.",
             mapping={'email': email})
-    #provider.logger.debug("Callback")
-    raise HTTPForbidden(provider.request.localizer.translate(msg))
+    fm = IFlashMessages(provider.request)
+    fm.add(msg, type='danger', auto_destruct=False, require_commit=False)
+    raise HTTPFound(location=provider.request.resource_url(provider.request.root, 'login'))
 
 
 def callback_register(provider, user, data):
     reg_id = str(uuid4())
     provider.request.session[reg_id] = data
     # Register this user
-    #self.logger.debug("Case 4 successful")
     return reg_id
 
 

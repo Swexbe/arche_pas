@@ -39,13 +39,13 @@ class CallbackAuthView(BaseView):
             raise HTTPBadRequest("Profile response didn't contain a user identifier.")
         user = provider.get_user(user_ident)
         if user:
-            print "CALLBACK LOGIN"
+            provider.logger.info('Logged in %s via provider %s', user.userid, provider_name)
             self.flash_messages.add(_("Logged in via ${provider}",
                                       mapping={'provider': self.request.localizer.translate(provider.title)}),
                                     type='success')
             return provider.login(user)
         else:
-            print "CALLBACK REGISTER"
+            provider.logger.info('Rendering registration via provider %s', provider_name)
             reg_response = provider.prepare_register(profile_data)
             if isinstance(reg_response, string_types):
                 return HTTPFound(
@@ -106,9 +106,12 @@ class RegisterPASForm(BaseForm):
         userid = appstruct.pop('userid')
         redirect_url = appstruct.pop('came_from', None)
         email = self.provider.get_email(self.provider_response)
-        #FIXME: Flag for validated email
         user = factory(email = email, **appstruct)
         self.context['users'][userid] = user
+        #Trust email validation?
+        if self.provider.trust_email:
+            if bool(self.provider.get_email(self.provider_response, validated=True)):
+                user.email_validated = True
         self.provider.store(user, self.provider_response)
         self.flash_messages.add(_("Welcome, you're now registered!"), type="success")
         self.request.session.pop(self.reg_id, None)
@@ -118,7 +121,7 @@ class RegisterPASForm(BaseForm):
 class ConfirmLinkAccountPASForm(BaseForm):
     type_name = 'PAS'
     schema_name = 'link_data'
-    title = _("Link account?")
+    #title = _("Link account?")
 
     @property
     def buttons(self):
@@ -152,8 +155,13 @@ class ConfirmLinkAccountPASForm(BaseForm):
 
     def link_success(self, appstruct):
         self.provider.store(self.request.profile, self.provider_response)
-    #     #FIXME: Flag for validated email
         #FIXME: Decide about overwrite of email
+        #Maybe flag email as validated?
+        if not self.request.profile.email_validated:
+            #Do we trust the provider and have a proper email address?
+            email = self.provider.get_email(self.provider_response)
+            if email and email == self.profile.email and self.provider.trust_email:
+                self.request.profile.email_validated = True
         provider_title = self.request.localizer.translate(self.provider.title)
         self.flash_messages.add(_("You may now login with ${provider_title}.",
                                   mapping={'provider_title': provider_title}),
@@ -196,4 +204,4 @@ def includeme(config):
                     renderer='arche:templates/form.pt', permission=PERM_EDIT)
     config.add_route('pas_link', '/pas_link/{provider}/{reg_id}')
     config.add_view(ConfirmLinkAccountPASForm, route_name='pas_link',
-                    renderer='arche:templates/form.pt')
+                    renderer='arche_pas:templates/link_form.pt')
