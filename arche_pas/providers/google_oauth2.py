@@ -66,6 +66,9 @@ class GoogleOAuth2(PASProvider):
             else:
                 return email
 
+    def get_profile_image(self, response):
+        return response.get('picture', None)
+
     def registration_appstruct(self, response):
         return dict(
             first_name = response.get('given_name', ''),

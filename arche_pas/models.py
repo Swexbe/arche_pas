@@ -234,6 +234,9 @@ class PASProvider(object):
     def get_email(self, response, validated=False): #pragma: no coverage
         pass
 
+    def get_profile_image(self, response):
+        pass
+
     def registration_appstruct(self, response): #pragma: no coverage
         return {}
 
