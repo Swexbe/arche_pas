@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="view.macro('arche:templates/master.pt')"
+      i18n:domain="Arche">
+<tal:blank metal:fill-slot="heading"></tal:blank>
+<tal:blank metal:fill-slot="actionbar"></tal:blank>
+<div metal:fill-slot="content">
+  <h1>
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    <span i18n:translate="">Login / Registration caused an error</span>
+  </h1>
+  <p i18n:translate="contact_someone_exception">If you've tried several times, you may want to
+    contact the organisation running the site about this.</p>
+  <p tal:condition="not debug" class="lead">${exc_msg}</p>
+
+  <tal:show_error condition="debug">
+    <p class="lead" i18n:translate="">arche.debug is set to True, so this error will be printed instead of logged.</p>
+    <pre tal:content="structure exception_str">
+        (error)
+    </pre>
+  </tal:show_error>
+</div><!-- content -->
+</html>

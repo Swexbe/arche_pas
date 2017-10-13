@@ -3,7 +3,10 @@ from arche.events import ObjectUpdatedEvent
 from arche.interfaces import IUser
 from arche.security import PERM_EDIT
 from arche.utils import get_content_schemas
-from arche.views.base import BaseForm, BaseView
+from arche.views.base import BaseForm
+from arche.views.base import BaseView
+from arche.views.exceptions import ExceptionView
+from oauthlib.oauth2 import OAuth2Error
 from pyramid.httpexceptions import HTTPBadRequest
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
@@ -28,11 +31,8 @@ class BeginAuthView(BaseView):
 class CallbackAuthView(BaseView):
 
     def __call__(self):
-        #FIXME: Handle ALL provider exceptions here!
         provider_name = self.request.matchdict.get('provider', '')
         provider = self.request.registry.queryAdapter(self.request, IPASProvider, name = provider_name)
-        #FIXME: Redirect when a user is logged in and ask about attaching accounts?
-        #FIXME: Handle exceptions here
         profile_data = provider.callback()
         user_ident = profile_data.get(provider.id_key, None)
         if not user_ident:
@@ -125,7 +125,7 @@ class ConfirmLinkAccountPASForm(BaseForm):
 
     @property
     def buttons(self):
-        return (deform.Button('link', title = _("Link account"),), #css_class = 'btn btn-success'
+        return (deform.Button('link', title = _("Link account"),),
                 self.button_cancel,)
 
     def __init__(self, context, request):
@@ -205,3 +205,8 @@ def includeme(config):
     config.add_route('pas_link', '/pas_link/{provider}/{reg_id}')
     config.add_view(ConfirmLinkAccountPASForm, route_name='pas_link',
                     renderer='arche_pas:templates/link_form.pt')
+    config.add_exception_view(
+        ExceptionView,
+        context=OAuth2Error,
+        xhr=False,
+        renderer="arche_pas:templates/oauth_exception.pt", )
