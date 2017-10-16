@@ -182,6 +182,7 @@ class GetRegisterCaseTests(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         self.config.include('arche_pas.models')
+        self.config.include('arche_pas.registration_cases')
 
     def tearDown(self):
         testing.tearDown()

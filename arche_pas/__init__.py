@@ -29,6 +29,7 @@ def includeme(config):
     config.include('.catalog')
     config.include('.views')
     config.include('.schemas')
+    config.include('.registration_cases')
     #Check for providers and include them
     for k in config.registry.settings:
         if k.startswith('arche_pas.providers.'):
