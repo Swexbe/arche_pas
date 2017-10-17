@@ -225,9 +225,27 @@ class PASProvider(object):
         assert IUser.providedBy(user)
         assert isinstance(data, dict)
         provider_data = IProviderData(user)
-        provider_data[self.name] = data
-        event = ObjectUpdatedEvent(user, changed = ['pas_ident'])
-        objectEventNotify(event)
+        #Check if data already exist and if it needs to be updated
+        stored_keys = set()
+        if self.name in provider_data:
+            curr_data = provider_data[self.name]
+            #Check existing keys
+            for (k, v) in data.items():
+                if curr_data.get(k, object()) != v:
+                    curr_data[k] = v
+                    stored_keys.add(k)
+            #Remove unused keys
+            for k in set(curr_data) - set(data):
+                del curr_data[k]
+                #We don't need to track updated here
+        else:
+            provider_data[self.name] = data
+            stored_keys.update(data)
+        if stored_keys:
+            self.logger.debug("provider %s data changed for user %s", self.name, user.userid)
+            event = ObjectUpdatedEvent(user, changed = ['pas_ident'])
+            objectEventNotify(event)
+        return stored_keys
 
     def get_email(self, response, validated=False): #pragma: no coverage
         pass

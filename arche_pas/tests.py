@@ -132,13 +132,37 @@ class PASProviderTests(unittest.TestCase):
         provider = self._dummy_provider()
         self.config.registry.registerAdapter(provider, name = provider.name)
         root['users']['jane'] = user
-        obj = provider(root)
+        obj = provider(request)
         L = []
         def subsc(obj, event):
             L.append(event)
         self.config.add_subscriber(subsc, [IUser, IObjectUpdatedEvent])
         obj.store(user, {'hello': 'world', 1:2})
         self.assertIn('pas_ident', L[0].changed)
+
+    def test_store_saves_new_keys(self):
+        self.config.include('arche.testing')
+        self.config.include('arche.testing.catalog')
+        self.config.include('arche_pas')
+        root = barebone_fixture(self.config)
+        request = testing.DummyRequest()
+        apply_request_extensions(request)
+        request.root = root
+        self.config.begin(request)
+        user = User()
+        provider_data = IProviderData(user)
+        provider_data['dummy'] = {'dummy_key': 'very_secret'}
+        provider = self._dummy_provider()
+        self.config.registry.registerAdapter(provider, name = provider.name)
+        root['users']['jane'] = user
+        obj = provider(request)
+        self.assertEqual(obj.store(user, {'hello': 'world', 1:2}), set(['hello', 1]))
+        self.assertEqual(obj.store(user, {'hello': 'world', 1:2}), set())
+        #hello removed
+        self.assertEqual(obj.store(user, {1:2}), set())
+        self.assertNotIn('hello', provider_data['dummy'])
+        #1 was updated
+        self.assertEqual(obj.store(user, {1:3}), set([1]))
 
 
 class AddPASTests(unittest.TestCase):

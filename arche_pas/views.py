@@ -43,6 +43,7 @@ class CallbackAuthView(BaseView):
             self.flash_messages.add(_("Logged in via ${provider}",
                                       mapping={'provider': self.request.localizer.translate(provider.title)}),
                                     type='success')
+            provider.store(user, profile_data)
             return provider.login(user)
         else:
             provider.logger.info('Rendering registration via provider %s', provider_name)
