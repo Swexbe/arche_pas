@@ -25,7 +25,9 @@ class BeginAuthView(BaseView):
     def __call__(self):
         provider_name = self.request.matchdict.get('provider', '')
         provider = self.request.registry.queryAdapter(self.request, IPASProvider, name = provider_name)
-        return HTTPFound(location=provider.begin())
+        if provider:
+            return HTTPFound(location=provider.begin())
+        raise HTTPNotFound(_("No login provider with that name"))
 
 
 class CallbackAuthView(BaseView):
