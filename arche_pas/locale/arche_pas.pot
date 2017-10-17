@@ -1,0 +1,134 @@
+#
+# SOME DESCRIPTIVE TITLE
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE 1.0\n"
+"POT-Creation-Date: 2017-10-17 16:52+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"Generated-By: Lingua 4.7\n"
+
+#. Default: Since you already had an account with the same email address
+#. validated, you've been logged in as that user. Your accounts have also been
+#. linked.
+#: ./arche_pas/./registration_cases.py:16
+msgid "data_tied_at_login"
+msgstr ""
+
+#. Default: You've linked your external login to this account.
+#: ./arche_pas/./registration_cases.py:28
+msgid "accounts_linked_verified_since_logged_in"
+msgstr ""
+
+#. Default: There's already a user registered here with your email address:
+#. '${email}' If this is your account, please login here first to connect the
+#. two accounts.
+#: ./arche_pas/./registration_cases.py:37
+msgid "user_email_present"
+msgstr ""
+
+#: ./arche_pas/./schemas.py:27
+#, python-format
+msgid "<An unknown provider namned '${name}'>"
+msgstr ""
+
+#: ./arche_pas/./schemas.py:34
+msgid "Must be checked"
+msgstr ""
+
+#: ./arche_pas/./schemas.py:40
+msgid "Confirm"
+msgstr ""
+
+#: ./arche_pas/./schemas.py:48
+msgid "Remove password to disable password login?"
+msgstr ""
+
+#. Default: You may set a new password through the 'Request password' page when
+#. you login, in case you loose the ability to login with other services.
+#: ./arche_pas/./schemas.py:49
+msgid "remove_password_description"
+msgstr ""
+
+#: ./arche_pas/./schemas.py:56
+msgid "Remove authentication?"
+msgstr ""
+
+#. Default: Warning: You may not login again with any service you remove here.
+#. However, you may tie existing accounts to a provider again, and login that
+#. way.
+#: ./arche_pas/./schemas.py:57
+msgid "providers_to_remove_description"
+msgstr ""
+
+#: ./arche_pas/./views.py:30
+msgid "No login provider with that name"
+msgstr ""
+
+#: ./arche_pas/./views.py:45
+#, python-format
+msgid "Logged in via ${provider}"
+msgstr ""
+
+#: ./arche_pas/./views.py:66
+msgid "Complete registration"
+msgstr ""
+
+#: ./arche_pas/./views.py:71
+msgid "Already logged in."
+msgstr ""
+
+#: ./arche_pas/./views.py:75
+msgid "Register"
+msgstr ""
+
+#: ./arche_pas/./views.py:119
+msgid "Welcome, you're now registered!"
+msgstr ""
+
+#: ./arche_pas/./views.py:131
+msgid "Link account"
+msgstr ""
+
+#: ./arche_pas/./views.py:137
+msgid "You need to be logged in to link an account"
+msgstr ""
+
+#: ./arche_pas/./views.py:169
+#, python-format
+msgid "You may now login with ${provider_title}."
+msgstr ""
+
+#: ./arche_pas/./views.py:182
+msgid "Remove"
+msgstr ""
+
+#: ./arche_pas/./views.py:194
+msgid "Removed successfully"
+msgstr ""
+
+#: ./arche_pas/./providers/google_oauth2.py:10
+msgid "Google"
+msgstr ""
+
+#: ./arche_pas/./providers/wp_oauth2.py:9
+msgid "OAuth2"
+msgstr ""
+
+#: ./arche_pas/./templates/link_form.pt:10
+msgid "Link your account?"
+msgstr ""
+
+#. Default: You're logged in as ${userid} here. If you link your accounts you
+#. will be able to login via ${provider_title}.
+#: ./arche_pas/./templates/link_form.pt:12
+msgid "link_accounts_description"
+msgstr ""

@@ -34,3 +34,5 @@ def includeme(config):
     for k in config.registry.settings:
         if k.startswith('arche_pas.providers.'):
             config.include(k)
+    #Translations
+    config.add_translation_dirs('arche_pas:locale/')
