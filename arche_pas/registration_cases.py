@@ -65,21 +65,21 @@ def includeme(config):
     2) Validated on server, exists locally but not validated, user logged in
     3) Validated on server, exists locally but not validated, user not logged in
     4) Validated on server, doesn't exist locally
-    4A) Validated on server, doesn't match locally but user logged in
+    5) Validated on server, doesn't match locally but user logged in
      - change email?
 
     Serious security breach risk:
-    5) Not validated/trusted on server, validated locally, user logged in
+    6) Not validated/trusted on server, validated locally, user logged in
        - Serious risk of hack: cross site scripting or accidental attach of credentials
-    6) Not validated/trusted on server, validated locally, user not logged in
+    7) Not validated/trusted on server, validated locally, user not logged in
 
-    7) Not validated/trusted on server, exists locally but not validated, user logged in
-    7A) Not validated/trusted on server, local user not matched, user logged in
-    8) Not validated/trusted on server, exists locally but not validated, user not logged in
-    9) Not validated/trusted on server, doesn't exist locally, not logged in
+    8) Not validated/trusted on server, exists locally but not validated, user logged in
+    9) Not validated/trusted on server, local user not matched, user logged in
+    10) Not validated/trusted on server, exists locally but not validated, user not logged in
+    11) Not validated/trusted on server, doesn't exist locally, not logged in
 
-    10) No email from provider, user logged in
-    11) No email from provider, user not logged in
+    12) No email from provider, user logged in
+    13) No email from provider, user not logged in
     """
 
     register_case(
@@ -128,7 +128,7 @@ def includeme(config):
     )
     register_case(
         config.registry,
-        'case4a',
+        'case5',
         title = "Validated on server, doesn't match locally but is authenticated",
         require_authenticated = True,
         email_validated_provider = True,
@@ -139,7 +139,7 @@ def includeme(config):
     )
     register_case(
         config.registry,
-        'case5',
+        'case6',
         title="Not validated/trusted on server, validated locally, user logged in",
         require_authenticated = True,
         #email_validated_provider = None,
@@ -151,7 +151,7 @@ def includeme(config):
     )
     register_case(
         config.registry,
-        'case6',
+        'case7',
         title="Not validated/trusted on server, validated locally, user not logged in",
         require_authenticated = False,
         #email_validated_provider = None,
@@ -163,7 +163,7 @@ def includeme(config):
     )
     register_case(
         config.registry,
-        'case7',
+        'case8',
         title="Not validated/trusted on server, exists locally but not validated, user logged in",
         require_authenticated = True,
         email_validated_provider = None,
@@ -175,7 +175,7 @@ def includeme(config):
     )
     register_case(
         config.registry,
-        'case7a',
+        'case9',
         title="Not validated/trusted on server, local user not matched, user logged in",
         require_authenticated = True,
         email_validated_provider = None,
@@ -187,7 +187,7 @@ def includeme(config):
     )
     register_case(
         config.registry,
-        'case8',
+        'case10',
         title="Not validated/trusted on server, exists locally but not validated, user not logged in",
         require_authenticated = False,
         email_validated_provider = None,
@@ -199,7 +199,7 @@ def includeme(config):
     )
     register_case(
         config.registry,
-        'case9',
+        'case11',
         title="Not validated/trusted on server, doesn't exist locally",
         require_authenticated = False,
         email_validated_provider = None,
@@ -211,7 +211,7 @@ def includeme(config):
     )
     register_case(
         config.registry,
-        'case10',
+        'case12',
         title="No email from provider, user logged in",
         require_authenticated = True,
         email_validated_provider = None,
@@ -223,7 +223,7 @@ def includeme(config):
     )
     register_case(
         config.registry,
-        'case11',
+        'case13',
         title="No email from provider, user not logged in",
         require_authenticated = False,
         #email_validated_provider = None,

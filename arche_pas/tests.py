@@ -252,7 +252,7 @@ class GetRegisterCaseTests(unittest.TestCase):
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case4')
 
-    def test_case_4a(self):
+    def test_case_5(self):
         match_params = dict(
             require_authenticated=True,
             email_validated_provider=True,
@@ -262,29 +262,17 @@ class GetRegisterCaseTests(unittest.TestCase):
             provider_validation_trusted=True,
         )
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case4a')
+        self.assertEqual(util.name, 'case5')
         match_params['email_validated_locally'] = False #Shouldn't matter
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case4a')
+        self.assertEqual(util.name, 'case5')
         match_params['email_validated_locally'] = True #Shouldn't matter
-        util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case4a')
-
-    def test_case_5(self):
-        match_params = dict(
-            require_authenticated=True,
-            email_validated_provider=False,
-            email_validated_locally=True,
-            user_exist_locally=True,
-            email_from_provider=True,
-            provider_validation_trusted=False,
-        )
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case5')
 
     def test_case_6(self):
         match_params = dict(
-            require_authenticated=False,
+            require_authenticated=True,
             email_validated_provider=False,
             email_validated_locally=True,
             user_exist_locally=True,
@@ -296,34 +284,19 @@ class GetRegisterCaseTests(unittest.TestCase):
 
     def test_case_7(self):
         match_params = dict(
-            require_authenticated=True,
-            email_validated_provider=True, #Irrelevant
-            email_validated_locally=False,
+            require_authenticated=False,
+            email_validated_provider=False,
+            email_validated_locally=True,
             user_exist_locally=True,
             email_from_provider=True,
             provider_validation_trusted=False,
         )
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case7')
-        match_params['email_validated_provider'] = False #Shouldn't matter
-        util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case7')
-
-    def test_case_7a(self):
-        match_params = dict(
-            require_authenticated=True,
-            #email_validated_provider=True,
-            email_validated_locally=False,
-            user_exist_locally=False,
-            email_from_provider=True,
-            provider_validation_trusted=False,
-        )
-        util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case7a')
 
     def test_case_8(self):
         match_params = dict(
-            require_authenticated=False,
+            require_authenticated=True,
             email_validated_provider=True, #Irrelevant
             email_validated_locally=False,
             user_exist_locally=True,
@@ -338,6 +311,33 @@ class GetRegisterCaseTests(unittest.TestCase):
 
     def test_case_9(self):
         match_params = dict(
+            require_authenticated=True,
+            #email_validated_provider=True,
+            email_validated_locally=False,
+            user_exist_locally=False,
+            email_from_provider=True,
+            provider_validation_trusted=False,
+        )
+        util = self._fut(registry=self.config.registry, **match_params)
+        self.assertEqual(util.name, 'case9')
+
+    def test_case_10(self):
+        match_params = dict(
+            require_authenticated=False,
+            email_validated_provider=True, #Irrelevant
+            email_validated_locally=False,
+            user_exist_locally=True,
+            email_from_provider=True,
+            provider_validation_trusted=False,
+        )
+        util = self._fut(registry=self.config.registry, **match_params)
+        self.assertEqual(util.name, 'case10')
+        match_params['email_validated_provider'] = False #Shouldn't matter
+        util = self._fut(registry=self.config.registry, **match_params)
+        self.assertEqual(util.name, 'case10')
+
+    def test_case_11(self):
+        match_params = dict(
             require_authenticated=False,
             email_validated_provider=False,  # Irrelevant
             email_validated_locally=False,
@@ -346,12 +346,12 @@ class GetRegisterCaseTests(unittest.TestCase):
             provider_validation_trusted=False, #Should work regardless
         )
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case9')
+        self.assertEqual(util.name, 'case11')
         match_params['email_validated_provider'] = True  # Shouldn't matter
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case9')
+        self.assertEqual(util.name, 'case11')
 
-    def test_case_10(self):
+    def test_case_12(self):
         match_params = dict(
             require_authenticated=True,
             email_validated_provider=False,  # Irrelevant
@@ -361,19 +361,19 @@ class GetRegisterCaseTests(unittest.TestCase):
             provider_validation_trusted=False, #Should work regardless
         )
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case10')
+        self.assertEqual(util.name, 'case12')
         #Check all irrelevant options
         match_params_alt = match_params.copy()
         match_params_alt['email_validated_provider'] = True
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case10')
+        self.assertEqual(util.name, 'case12')
 
         match_params_alt = match_params.copy()
         match_params_alt['provider_validation_trusted'] = True
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case10')
+        self.assertEqual(util.name, 'case12')
 
-    def test_case_10(self):
+    def test_case_13(self):
         match_params = dict(
             require_authenticated=False,
             email_validated_provider=False,  # Irrelevant
@@ -383,14 +383,14 @@ class GetRegisterCaseTests(unittest.TestCase):
             provider_validation_trusted=False,  # Should work regardless
         )
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case11')
+        self.assertEqual(util.name, 'case13')
         # Check all irrelevant options
         match_params_alt = match_params.copy()
         match_params_alt['email_validated_provider'] = True
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case11')
+        self.assertEqual(util.name, 'case13')
 
         match_params_alt = match_params.copy()
         match_params_alt['provider_validation_trusted'] = True
         util = self._fut(registry=self.config.registry, **match_params)
-        self.assertEqual(util.name, 'case11')
+        self.assertEqual(util.name, 'case13')
