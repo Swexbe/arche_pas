@@ -116,6 +116,7 @@ class PASProvider(object):
     name = ''
     title = ''
     id_key = ''
+    image_key = ''
     settings = None
     default_settings = {}
     paster_config_ns = ''
@@ -232,7 +233,8 @@ class PASProvider(object):
         pass
 
     def get_profile_image(self, response):
-        pass
+        if self.image_key:
+            return response.get(self.image_key, None)
 
     def registration_appstruct(self, response): #pragma: no coverage
         return {}

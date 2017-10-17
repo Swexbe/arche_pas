@@ -9,6 +9,7 @@ class GoogleOAuth2(PASProvider):
     name = "google_oauth2"
     title = _("Google")
     id_key = 'id'
+    image_key = 'picture'
     paster_config_ns = __name__
     trust_email = True
     default_settings = {
@@ -65,9 +66,6 @@ class GoogleOAuth2(PASProvider):
                     return email
             else:
                 return email
-
-    def get_profile_image(self, response):
-        return response.get('picture', None)
 
     def registration_appstruct(self, response):
         return dict(
