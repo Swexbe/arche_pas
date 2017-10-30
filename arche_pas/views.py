@@ -1,5 +1,6 @@
 import deform
 from arche.events import ObjectUpdatedEvent
+from arche.interfaces import IEmailValidationTokens
 from arche.interfaces import IUser
 from arche.security import PERM_EDIT
 from arche.utils import get_content_schemas
@@ -11,6 +12,7 @@ from pyramid.httpexceptions import HTTPBadRequest
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPNotFound
+from pyramid.renderers import render
 from six import string_types
 from zope.component.event import objectEventNotify
 from zope.interface.interfaces import ComponentLookupError
@@ -109,14 +111,45 @@ class RegisterPASForm(BaseForm):
         userid = appstruct.pop('userid')
         redirect_url = appstruct.pop('came_from', None)
         email = self.provider.get_email(self.provider_response)
-        user = factory(email = email, **appstruct)
+        if email:
+            user = factory(email = email, **appstruct)
+        else:
+            user = factory(**appstruct)
         self.context['users'][userid] = user
         #Trust email validation?
+        require_validation = True
         if self.provider.trust_email:
             if bool(self.provider.get_email(self.provider_response, validated=True)):
                 user.email_validated = True
+                require_validation = False
+        if require_validation:
+            if email:
+                #FIXME: This notification may move to the adapter in arche.
+                val_tokens = IEmailValidationTokens(user)
+                token = val_tokens.new(email)
+                url = self.request.resource_url(self.context, '_ve', query = {'t': token, 'e': email})
+                html = self.render_template("arche:templates/emails/email_validate.pt", user = user, url = url)
+                self.request.send_email(_("Email validation"),
+                                        [email],
+                                        html)
+                self.flash_messages.add(
+                    _("registered_but_needs_validation",
+                      default="You're registered but you still need to validate your email address. "
+                      "An email with a link has been sent to ${email}. "
+                      "Click the link to complete the proceedure. "
+                      "If you wish to change your email you may do so on your profile page.",
+                      mapping={'email': email}),
+                    type="info", auto_destruct=False
+                )
+            else:
+                self.flash_messages.add(
+                    _("registered_no_email",
+                      default="You're registered, but no email was found. Set one on your profile."),
+                    type="success",
+                )
+        else:
+            self.flash_messages.add(_("Welcome, you're now registered!"), type="success")
         self.provider.store(user, self.provider_response)
-        self.flash_messages.add(_("Welcome, you're now registered!"), type="success")
         self.request.session.pop(self.reg_id, None)
         return self.provider.login(user, first_login = True, came_from = redirect_url)
 
@@ -124,7 +157,6 @@ class RegisterPASForm(BaseForm):
 class ConfirmLinkAccountPASForm(BaseForm):
     type_name = 'PAS'
     schema_name = 'link_data'
-    #title = _("Link account?")
 
     @property
     def buttons(self):
@@ -212,4 +244,4 @@ def includeme(config):
         ExceptionView,
         context=OAuth2Error,
         xhr=False,
-        renderer="arche_pas:templates/oauth_exception.pt", )
+        renderer="arche_pas:templates/oauth_exception.pt")
