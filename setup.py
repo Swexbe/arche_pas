@@ -7,9 +7,9 @@ README = open(os.path.join(here, 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.rst')).read()
 
 requires = ('Arche',
-            'requests-oauthlib',
+            'requests_oauthlib',
             'colander',
-            'pyramid>=1.6'
+            'pyramid>=1.8'
             )
 
 
