@@ -127,7 +127,7 @@ class RegisterPASForm(BaseForm):
                 #FIXME: This notification may move to the adapter in arche.
                 val_tokens = IEmailValidationTokens(user)
                 token = val_tokens.new(email)
-                url = self.request.resource_url(self.context, '_ve', query = {'t': token, 'e': email})
+                url = self.request.resource_url(user, '_ve', query = {'t': token, 'e': email})
                 html = self.render_template("arche:templates/emails/email_validate.pt", user = user, url = url)
                 self.request.send_email(_("Email validation"),
                                         [email],
