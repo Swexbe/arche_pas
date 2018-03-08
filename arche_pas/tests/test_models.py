@@ -18,10 +18,10 @@ from arche_pas.exceptions import ProviderConfigError
 class ProviderDataTests(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
- 
+
     def tearDown(self):
         testing.tearDown()
- 
+
     @property
     def _cut(self):
         from arche_pas.models import ProviderData
@@ -30,7 +30,7 @@ class ProviderDataTests(unittest.TestCase):
     def test_verify_object(self):
         context = User()
         self.failUnless(verifyObject(IProviderData, self._cut(context)))
- 
+
     def test_verify_class(self):
         self.failUnless(verifyClass(IProviderData, self._cut))
 
@@ -60,10 +60,12 @@ class PASProviderTests(unittest.TestCase):
             settings = None
             id_key = 'dummy_key'
             default_settings = {'one': 1}
+
             @classmethod
             def validate_settings(cls):
                 if cls.settings.get('one') != 1:
                     raise ProviderConfigError()
+
         return DummyProvider
 
     def test_verify_object(self):
@@ -105,7 +107,7 @@ class PASProviderTests(unittest.TestCase):
         provider_data = IProviderData(user)
         provider_data['dummy'] = {'dummy_key': 'very_secret'}
         provider = self._dummy_provider()
-        self.config.registry.registerAdapter(provider, name = provider.name)
+        self.config.registry.registerAdapter(provider, name=provider.name)
         root['users']['jane'] = user
         query = "pas_ident == ('dummy', 'very_secret')"
         docids = root.catalog.query(query)[1]
@@ -130,14 +132,16 @@ class PASProviderTests(unittest.TestCase):
         provider_data = IProviderData(user)
         provider_data['dummy'] = {'dummy_key': 'very_secret'}
         provider = self._dummy_provider()
-        self.config.registry.registerAdapter(provider, name = provider.name)
+        self.config.registry.registerAdapter(provider, name=provider.name)
         root['users']['jane'] = user
         obj = provider(request)
         L = []
+
         def subsc(obj, event):
             L.append(event)
+
         self.config.add_subscriber(subsc, [IUser, IObjectUpdatedEvent])
-        obj.store(user, {'hello': 'world', 1:2})
+        obj.store(user, {'hello': 'world', 1: 2})
         self.assertIn('pas_ident', L[0].changed)
 
     def test_store_saves_new_keys(self):
@@ -153,16 +157,16 @@ class PASProviderTests(unittest.TestCase):
         provider_data = IProviderData(user)
         provider_data['dummy'] = {'dummy_key': 'very_secret'}
         provider = self._dummy_provider()
-        self.config.registry.registerAdapter(provider, name = provider.name)
+        self.config.registry.registerAdapter(provider, name=provider.name)
         root['users']['jane'] = user
         obj = provider(request)
-        self.assertEqual(obj.store(user, {'hello': 'world', 1:2}), set(['hello', 1]))
-        self.assertEqual(obj.store(user, {'hello': 'world', 1:2}), set())
-        #hello removed
-        self.assertEqual(obj.store(user, {1:2}), set())
+        self.assertEqual(obj.store(user, {'hello': 'world', 1: 2}), set(['hello', 1]))
+        self.assertEqual(obj.store(user, {'hello': 'world', 1: 2}), set())
+        # hello removed
+        self.assertEqual(obj.store(user, {1: 2}), set())
         self.assertNotIn('hello', provider_data['dummy'])
-        #1 was updated
-        self.assertEqual(obj.store(user, {1:3}), set([1]))
+        # 1 was updated
+        self.assertEqual(obj.store(user, {1: 3}), set([1]))
 
 
 class AddPASTests(unittest.TestCase):
@@ -178,7 +182,7 @@ class AddPASTests(unittest.TestCase):
         from arche_pas.models import add_pas
         return add_pas
 
-    #FIXME: Proper tests for add_pas
+    # FIXME: Proper tests for add_pas
 
 
 class RegistrationCaseTests(unittest.TestCase):
@@ -197,6 +201,7 @@ class RegistrationCaseTests(unittest.TestCase):
     def test_cmp_crit(self):
         def hello():
             pass
+
         one = self._cut('one', callback=hello)
         two = self._cut('two', callback=hello)
         self.assertRaises(ValueError, one.cmp_crit, two)
@@ -218,10 +223,10 @@ class GetRegisterCaseTests(unittest.TestCase):
 
     def test_case_1(self):
         match_params = dict(
-            require_authenticated=None, #Irrelevant alternative
+            require_authenticated=None,  # Irrelevant alternative
             email_validated_provider=True,
             email_validated_locally=True,
-            user_exist_locally=True, #Irrelevant alternative, must always exist
+            user_exist_locally=True,  # Irrelevant alternative, must always exist
             email_from_provider=True,
             provider_validation_trusted=True,
         )
@@ -233,7 +238,7 @@ class GetRegisterCaseTests(unittest.TestCase):
         match_params['require_authenticated'] = True
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case1')
-        match_params['user_exist_locally'] = True #Shouldn't matter
+        match_params['user_exist_locally'] = True  # Shouldn't matter
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case1')
 
@@ -265,14 +270,14 @@ class GetRegisterCaseTests(unittest.TestCase):
         match_params = dict(
             require_authenticated=False,
             email_validated_provider=True,
-            #email_validated_locally=None, #Irrelevant, since user shouldn't exist
+            # email_validated_locally=None, #Irrelevant, since user shouldn't exist
             user_exist_locally=False,
             email_from_provider=True,
             provider_validation_trusted=True,
         )
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case4')
-        match_params['email_validated_locally'] = False #Shouldn't matter
+        match_params['email_validated_locally'] = False  # Shouldn't matter
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case4')
 
@@ -280,17 +285,17 @@ class GetRegisterCaseTests(unittest.TestCase):
         match_params = dict(
             require_authenticated=True,
             email_validated_provider=True,
-           # email_validated_locally=None, #Shouldn't matter, since user didn't match
+            # email_validated_locally=None, #Shouldn't matter, since user didn't match
             user_exist_locally=False,
             email_from_provider=True,
             provider_validation_trusted=True,
         )
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case5')
-        match_params['email_validated_locally'] = False #Shouldn't matter
+        match_params['email_validated_locally'] = False  # Shouldn't matter
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case5')
-        match_params['email_validated_locally'] = True #Shouldn't matter
+        match_params['email_validated_locally'] = True  # Shouldn't matter
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case5')
 
@@ -321,7 +326,7 @@ class GetRegisterCaseTests(unittest.TestCase):
     def test_case_8(self):
         match_params = dict(
             require_authenticated=True,
-            email_validated_provider=True, #Irrelevant
+            email_validated_provider=True,  # Irrelevant
             email_validated_locally=False,
             user_exist_locally=True,
             email_from_provider=True,
@@ -329,14 +334,14 @@ class GetRegisterCaseTests(unittest.TestCase):
         )
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case8')
-        match_params['email_validated_provider'] = False #Shouldn't matter
+        match_params['email_validated_provider'] = False  # Shouldn't matter
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case8')
 
     def test_case_9(self):
         match_params = dict(
             require_authenticated=True,
-            #email_validated_provider=True,
+            # email_validated_provider=True,
             email_validated_locally=False,
             user_exist_locally=False,
             email_from_provider=True,
@@ -348,7 +353,7 @@ class GetRegisterCaseTests(unittest.TestCase):
     def test_case_10(self):
         match_params = dict(
             require_authenticated=False,
-            email_validated_provider=True, #Irrelevant
+            email_validated_provider=True,  # Irrelevant
             email_validated_locally=False,
             user_exist_locally=True,
             email_from_provider=True,
@@ -356,7 +361,7 @@ class GetRegisterCaseTests(unittest.TestCase):
         )
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case10')
-        match_params['email_validated_provider'] = False #Shouldn't matter
+        match_params['email_validated_provider'] = False  # Shouldn't matter
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case10')
 
@@ -367,7 +372,7 @@ class GetRegisterCaseTests(unittest.TestCase):
             email_validated_locally=False,
             user_exist_locally=False,
             email_from_provider=True,
-            provider_validation_trusted=False, #Should work regardless
+            provider_validation_trusted=False,  # Should work regardless
         )
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case11')
@@ -379,14 +384,14 @@ class GetRegisterCaseTests(unittest.TestCase):
         match_params = dict(
             require_authenticated=True,
             email_validated_provider=False,  # Irrelevant
-            email_validated_locally=False, #Check both
+            email_validated_locally=False,  # Check both
             user_exist_locally=False,
             email_from_provider=False,
-            provider_validation_trusted=False, #Should work regardless
+            provider_validation_trusted=False,  # Should work regardless
         )
         util = self._fut(registry=self.config.registry, **match_params)
         self.assertEqual(util.name, 'case12')
-        #Check all irrelevant options
+        # Check all irrelevant options
         match_params_alt = match_params.copy()
         match_params_alt['email_validated_provider'] = True
         util = self._fut(registry=self.config.registry, **match_params)

@@ -267,8 +267,8 @@ def add_pas(config, factory):
     from json import loads
     assert IPASProvider.implementedBy(factory)
     assert factory.name, "Factory must have a name"
-    assert factory.paster_config_ns, "Factory must have a paster_config_ns set"
-    filename = config.registry.settings.get(factory.paster_config_ns, None)
+    provider_name = factory.__module__
+    filename = config.registry.settings['arche_pas.providers'][provider_name]
     if not isfile(filename):
         raise IOError("Can't find any file at: '%s'" % filename)
     with open(filename, 'r') as f:

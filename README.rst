@@ -7,12 +7,17 @@ New providers are registered by subclassing arche_pas.models.PASProvider and con
 
 Providers are initialized in your paster .ini using:
 
+
 arche.includes =
     # To activate PAS module.
     arche_pas
 
+
 # Activate provider 'google_oauth2' with data from var/google.json
-arche_pas.providers.google_oauth2 = %(here)s/../var/google.json
+
+arche_pas.providers
+    arche_pas.providers.google_oauth2 %(here)s/../var/google.json
+
 
 Example json setting file (google.json from above):
 

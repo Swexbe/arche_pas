@@ -10,7 +10,7 @@ class GoogleOAuth2(PASProvider):
     title = _("Google")
     id_key = 'id'
     image_key = 'picture'
-    paster_config_ns = __name__
+#    paster_config_ns = __name__
     trust_email = True
     default_settings = {
         "auth_uri":"https://accounts.google.com/o/oauth2/auth",
@@ -42,16 +42,17 @@ class GoogleOAuth2(PASProvider):
     def begin(self):
         # OAuth endpoints given in the Google API documentation
         google = self.get_session()
-        authorization_url, state = google.authorization_url(self.settings['auth_uri'],
-                                                            access_type=self.settings['access_type'],
-                                                            approval_prompt=self.settings['approval_prompt'])
+        authorization_url, state = google.authorization_url(
+            self.settings['auth_uri'],
+            access_type=self.settings['access_type'],
+            approval_prompt=self.settings['approval_prompt'])
         return authorization_url
 
     def callback(self):
         google = self.get_session()
         #Should we do anything with the token response? Auth is handled by Arche anyway.
         #We should probably store the image url
-        res =  google.fetch_token(self.settings['token_uri'],
+        res = google.fetch_token(self.settings['token_uri'],
                                   client_secret=self.settings['client_secret'],
                                   authorization_response=self.request.url)
         profile_response = google.get(self.settings['profile_uri'])
