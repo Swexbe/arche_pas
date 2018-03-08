@@ -27,6 +27,9 @@ class BeginAuthView(BaseView):
     def __call__(self):
         provider_name = self.request.matchdict.get('provider', '')
         provider = self.request.registry.queryAdapter(self.request, IPASProvider, name = provider_name)
+        came_from = self.request.GET.get('came_from', '')
+        if came_from:
+            self.request.session['came_from'] = came_from
         if provider:
             return HTTPFound(location=provider.begin())
         raise HTTPNotFound(_("No login provider with that name"))
@@ -48,7 +51,8 @@ class CallbackAuthView(BaseView):
                                       mapping={'provider': self.request.localizer.translate(provider.title)}),
                                     type='success')
             provider.store(user, profile_data)
-            return provider.login(user)
+            came_from = self.request.session.pop('came_from', None)
+            return provider.login(user, came_from=came_from)
         else:
             provider.logger.info('Rendering registration via provider %s', provider_name)
             reg_response = provider.prepare_register(profile_data)
@@ -109,7 +113,10 @@ class RegisterPASForm(BaseForm):
     def register_success(self, appstruct):
         factory = self.request.content_factories['User']
         userid = appstruct.pop('userid')
-        redirect_url = appstruct.pop('came_from', None)
+        redirect_url = self.request.session.pop('came_from', None)
+        schema_redirect_url = appstruct.pop('came_from', None)
+        if not redirect_url:
+            redirect_url = schema_redirect_url
         email = self.provider.get_email(self.provider_response)
         if email:
             user = factory(email = email, **appstruct)
@@ -202,6 +209,9 @@ class ConfirmLinkAccountPASForm(BaseForm):
                                   mapping={'provider_title': provider_title}),
                                 type="success")
         self.request.session.pop(self.reg_id, None)
+        redirect_url = self.request.session.pop('came_from', None)
+        if redirect_url:
+            return HTTPFound(location=redirect_url)
         return HTTPFound(location=self.request.resource_url(self.context))
 
 
@@ -227,6 +237,17 @@ class RemovePASDataForm(BaseForm):
         return HTTPFound(location=self.request.resource_url(self.context))
 
 
+class RedirectOnExceptionView(ExceptionView):
+
+    def __call__(self):
+        response = super(RedirectOnExceptionView, self).__call__()
+        if response.get('debug', None):
+            return response
+        self.flash_messages.add(_("Something went wrong during login. Try again."),
+                                require_commit=False, type='danger')
+        return HTTPFound(location=self.request.resource_url(self.context))
+
+
 def includeme(config):
     config.add_route('pas_begin', '/pas_begin/{provider}')
     config.add_view(BeginAuthView, route_name='pas_begin')
@@ -241,7 +262,7 @@ def includeme(config):
     config.add_view(ConfirmLinkAccountPASForm, route_name='pas_link',
                     renderer='arche_pas:templates/link_form.pt')
     config.add_exception_view(
-        ExceptionView,
+        RedirectOnExceptionView,
         context=OAuth2Error,
         xhr=False,
         renderer="arche_pas:templates/oauth_exception.pt")
