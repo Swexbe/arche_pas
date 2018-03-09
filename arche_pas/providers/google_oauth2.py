@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from requests_oauthlib import OAuth2Session
 from six import string_types
 
@@ -10,7 +13,6 @@ class GoogleOAuth2(PASProvider):
     title = _("Google")
     id_key = 'id'
     image_key = 'picture'
-#    paster_config_ns = __name__
     trust_email = True
     default_settings = {
         "auth_uri":"https://accounts.google.com/o/oauth2/auth",
