@@ -157,6 +157,9 @@ class PASProvider(object):
     def begin(self): #pragma: no coverage
         return ""
 
+    def begin_url(self):
+        return self.request.route_url('pas_begin', provider=self.name)
+
     def callback(self): #pragma: no coverage
         return {}
 
