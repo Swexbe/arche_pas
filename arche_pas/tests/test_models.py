@@ -2,6 +2,7 @@ import unittest
 
 from BTrees.OOBTree import OOBTree
 from arche.interfaces import IObjectUpdatedEvent
+from arche.interfaces import IWillLoginEvent
 from arche.interfaces import IUser
 from arche.testing import barebone_fixture
 from pyramid import testing
@@ -9,6 +10,7 @@ from zope.interface.verify import verifyObject
 from zope.interface.verify import verifyClass
 from arche.api import User
 from pyramid.request import apply_request_extensions
+from pyramid.request import Request
 
 from arche_pas.interfaces import IProviderData
 from arche_pas.interfaces import IPASProvider
@@ -61,11 +63,6 @@ class PASProviderTests(unittest.TestCase):
             id_key = 'dummy_key'
             default_settings = {'one': 1}
 
-            @classmethod
-            def validate_settings(cls):
-                if cls.settings.get('one') != 1:
-                    raise ProviderConfigError()
-
         return DummyProvider
 
     def test_verify_object(self):
@@ -81,10 +78,33 @@ class PASProviderTests(unittest.TestCase):
         obj = factory(testing.DummyModel())
         self.assertEqual(obj.settings, {'one': 1, 'two': 2, 'three': 3})
 
-    def test_validate_settings(self):
+    def test_settings_update_provider(self):
+        factory = self._dummy_provider()
+        factory.update_settings({'two': 2, 'provider': {'title': 'Hello'}})
+        obj = factory(testing.DummyModel())
+        self.assertEqual(obj.title, 'Hello')
+
+    def test_validate_settings_error(self):
         factory = self._dummy_provider()
         factory.update_settings(one=2)
         self.assertRaises(ProviderConfigError, factory.validate_settings)
+
+    def test_validate_settings_default(self):
+        factory = self._dummy_provider()
+        factory.update_settings({
+            'client_id': 'client_id',
+            'auth_uri': 'auth_uri',
+            'token_uri': 'token_uri',
+            'client_secret': 'client_secret'
+        })
+        self.assertEqual(factory.validate_settings(), None)
+
+    def test_callback_url(self):
+        self.config.include('arche_pas.views')
+        factory = self._dummy_provider()
+        request = Request.blank('/')
+        obj = factory(request)
+        self.assertEqual(obj.callback_url(), 'http://localhost/pas_callback/dummy')
 
     def test_get_id(self):
         self.config.include('arche_pas.models')
@@ -115,10 +135,36 @@ class PASProviderTests(unittest.TestCase):
         obj = provider(request)
         self.assertEqual(obj.get_user('very_secret'), user)
 
+    # def test_build_reg_case_params(self):
+    #     request = testing.DummyRequest()
+    #     factory = self._dummy_provider()
+    #     obj = factory(request)
+    #     data = {
+    #
+    #     }
+    #     obj.build_reg_case_params(data)
+
     # def prepare_register(self, request, data):
     #
     # def login(self, user, request, first_login = False, came_from = None):
     #
+
+    def test_login(self):
+        from arche.resources import User
+        request = testing.DummyRequest()
+        root = barebone_fixture(self.config)
+        root['users']['jane'] = user = User()
+
+        L = []
+        def subscriber(event):
+            L.append(event)
+
+        self.config.add_subscriber(subscriber, IWillLoginEvent)
+        factory = self._dummy_provider()
+        obj = factory(request)
+        obj.login(user)
+        self.assertEqual(L[0].user, user)
+
     def test_store(self):
         self.config.include('arche.testing')
         self.config.include('arche.testing.catalog')

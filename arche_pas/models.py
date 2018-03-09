@@ -74,7 +74,7 @@ class RegistrationCase(object):
         for (k, v) in kw.items():
             if hasattr(self, k):
                 setattr(self, k, v)
-            else:
+            else: #pragma: no coverage
                 raise AttributeError("No such attribute %s" % k)
 
     def as_dict(self):
@@ -90,7 +90,7 @@ class RegistrationCase(object):
         if isinstance(other, RegistrationCase):
             if self.as_dict() == other.as_dict():
                 raise ValueError("Duplicate criteria between %s and %s" % (self.name, other.name))
-        else:
+        else: #pragma: no coverage
             raise TypeError("Must be another RegistrationCase instance")
 
     def match(self, params):
@@ -140,11 +140,11 @@ class PASProvider(object):
         for (k, v) in provider_settings.items():
             if hasattr(cls, k):
                 setattr(cls, k ,v)
-            else:
+            else: #pragma: no coverage
                 raise cls.ProviderConfigError("%s has no attribute %s" % (cls, k))
 
     @classmethod
-    def validate_settings(cls): #pragma: no coverage
+    def validate_settings(cls):
         try:
             assert isinstance(cls.settings, dict), \
                 "No configuration found for provider %r" % cls.name
@@ -154,10 +154,10 @@ class PASProvider(object):
         except AssertionError as exc:
             raise cls.ProviderConfigError(exc.message)
 
-    def begin(self):
+    def begin(self): #pragma: no coverage
         return ""
 
-    def callback(self):
+    def callback(self): #pragma: no coverage
         return {}
 
     def callback_url(self):
