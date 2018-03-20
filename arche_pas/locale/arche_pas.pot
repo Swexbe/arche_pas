@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-03-09 09:25+0100\n"
+"POT-Creation-Date: 2018-03-20 14:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,28 +69,28 @@ msgstr ""
 msgid "providers_to_remove_description"
 msgstr ""
 
-#: ./arche_pas/views.py:35
+#: ./arche_pas/views.py:37
 msgid "No login provider with that name"
 msgstr ""
 
-#: ./arche_pas/views.py:50
+#: ./arche_pas/views.py:52
 #, python-format
 msgid "Logged in via ${provider}"
 msgstr ""
 
-#: ./arche_pas/views.py:72
+#: ./arche_pas/views.py:74
 msgid "Complete registration"
 msgstr ""
 
-#: ./arche_pas/views.py:77
+#: ./arche_pas/views.py:79
 msgid "Already logged in."
 msgstr ""
 
-#: ./arche_pas/views.py:81
+#: ./arche_pas/views.py:83
 msgid "Register"
 msgstr ""
 
-#: ./arche_pas/views.py:139
+#: ./arche_pas/views.py:141
 msgid "Email validation"
 msgstr ""
 
@@ -98,45 +98,49 @@ msgstr ""
 #. address. An email with a link has been sent to ${email}. Click the link to
 #. complete the proceedure. If you wish to change your email you may do so on
 #. your profile page.
-#: ./arche_pas/views.py:143
+#: ./arche_pas/views.py:145
 msgid "registered_but_needs_validation"
 msgstr ""
 
 #. Default: You're registered, but no email was found. Set one on your profile.
-#: ./arche_pas/views.py:153
+#: ./arche_pas/views.py:155
 msgid "registered_no_email"
 msgstr ""
 
-#: ./arche_pas/views.py:158
+#: ./arche_pas/views.py:160
 msgid "Welcome, you're now registered!"
 msgstr ""
 
-#: ./arche_pas/views.py:170
+#: ./arche_pas/views.py:172
 msgid "Link account"
 msgstr ""
 
-#: ./arche_pas/views.py:176
+#: ./arche_pas/views.py:178
 msgid "You need to be logged in to link an account"
 msgstr ""
 
-#: ./arche_pas/views.py:208
+#: ./arche_pas/views.py:210
 #, python-format
 msgid "You may now login with ${provider_title}."
 msgstr ""
 
-#: ./arche_pas/views.py:224
+#: ./arche_pas/views.py:226
 msgid "Remove"
 msgstr ""
 
-#: ./arche_pas/views.py:236
+#: ./arche_pas/views.py:238
 msgid "Removed successfully"
 msgstr ""
 
-#: ./arche_pas/views.py:246
+#: ./arche_pas/views.py:248
 msgid "Something went wrong during login. Try again."
 msgstr ""
 
-#: ./arche_pas/providers/google_oauth2.py:10
+#: ./arche_pas/providers/facebook.py:14
+msgid "Facebook"
+msgstr ""
+
+#: ./arche_pas/providers/google_oauth2.py:13
 msgid "Google"
 msgstr ""
 
