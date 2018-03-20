@@ -12,7 +12,6 @@ from pyramid.httpexceptions import HTTPBadRequest
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPNotFound
-from pyramid.renderers import render
 from six import string_types
 from zope.component.event import objectEventNotify
 from zope.interface.interfaces import ComponentLookupError
