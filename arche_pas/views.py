@@ -17,6 +17,7 @@ from zope.component.event import objectEventNotify
 from zope.interface.interfaces import ComponentLookupError
 
 from arche_pas import _
+from arche_pas import logger
 from arche_pas.interfaces import IPASProvider
 from arche_pas.interfaces import IProviderData
 
@@ -30,7 +31,9 @@ class BeginAuthView(BaseView):
         if came_from:
             self.request.session['came_from'] = came_from
         if provider:
-            return HTTPFound(location=provider.begin())
+            redirect_url = provider.begin()
+            logger.debug('Begin redirects to: %s', redirect_url)
+            return HTTPFound(location=redirect_url)
         raise HTTPNotFound(_("No login provider with that name"))
 
 
