@@ -1,9 +1,12 @@
 import deform
 from arche.events import ObjectUpdatedEvent
 from arche.interfaces import IEmailValidationTokens
+from arche.interfaces import IViewInitializedEvent
 from arche.interfaces import IUser
 from arche.security import PERM_EDIT
 from arche.utils import get_content_schemas
+from arche.views.auth import LoginForm
+from arche.views.auth import RegisterForm
 from arche.views.base import BaseForm
 from arche.views.base import BaseView
 from arche.views.exceptions import ExceptionView
@@ -12,6 +15,7 @@ from pyramid.httpexceptions import HTTPBadRequest
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPNotFound
+from pyramid.renderers import render
 from six import string_types
 from zope.component.event import objectEventNotify
 from zope.interface.interfaces import ComponentLookupError
@@ -250,6 +254,17 @@ class RedirectOnExceptionView(ExceptionView):
         return HTTPFound(location=self.request.resource_url(self.context))
 
 
+def inject_login_providers(view, event):
+    """ Render login provider buttons before the login form. """
+    if not view.form_options.get('before_fields'):
+        view.form_options['before_fields'] = ""
+    request = view.request
+    providers = tuple(request.registry.getAdapters((request,), IPASProvider))
+    values = {'providers': providers}
+    tpl = 'arche_pas:templates/provider_links.pt'
+    view.form_options['before_fields'] += render(tpl, values, request=request)
+
+
 def includeme(config):
     config.add_route('pas_begin', '/pas_begin/{provider}')
     config.add_view(BeginAuthView, route_name='pas_begin')
@@ -268,3 +283,5 @@ def includeme(config):
         context=OAuth2Error,
         xhr=False,
         renderer="arche_pas:templates/oauth_exception.pt")
+    config.add_subscriber(inject_login_providers, [LoginForm, IViewInitializedEvent])
+    config.add_subscriber(inject_login_providers, [RegisterForm, IViewInitializedEvent])

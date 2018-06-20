@@ -1,0 +1,12 @@
+<tal:main xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="arche_pas">
+    <div class="text-right">
+        <span i18n:translate="">Via:</span>
+        <tal:iter repeat="(name, provider) providers">
+            <a class="btn btn-primary btn-sm" href="${provider.begin_url()}">${provider.title}</a>
+        </tal:iter>
+        <hr/>
+    </div>
+</tal:main>
