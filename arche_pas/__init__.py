@@ -1,5 +1,4 @@
 from logging import getLogger
-from string import whitespace
 
 from pyramid.i18n import TranslationStringFactory
 from pyramid.settings import asbool
@@ -32,6 +31,10 @@ def format_providers(txt):
 def includeme(config):
     bools = ('arche_pas.insecure_transport',)
     settings = config.registry.settings
+    settings['arche_pas.providers'] = providers = format_providers(settings.get('arche_pas.providers', ''))
+    if not providers:
+        logger.warn("arche_pas.providers isn't set so skipping inclusion of arche_pas")
+        return
     for (k, v) in DEFAULTS.items():
         if k not in settings:
             settings[k] = v
@@ -40,16 +43,14 @@ def includeme(config):
     if settings['arche_pas.insecure_transport']:
         import os
         os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+        logger.warn('OAuthlib configured to allow insecure transport')
     config.include('.models')
     config.include('.catalog')
     config.include('.views')
     config.include('.schemas')
     config.include('.registration_cases')
     #Check for providers and include them
-    settings['arche_pas.providers'] = providers = format_providers(settings.get('arche_pas.providers', ''))
     for provider_name in providers:
         config.include(provider_name)
-    if not providers:
-        logger.warn("arche_pas.providers isn't set so skipping inclusion of arche_pas")
     #Translations
     config.add_translation_dirs('arche_pas:locale/')

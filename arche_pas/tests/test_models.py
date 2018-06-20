@@ -117,7 +117,8 @@ class PASProviderTests(unittest.TestCase):
     def test_get_user(self):
         self.config.include('arche.testing')
         self.config.include('arche.testing.catalog')
-        self.config.include('arche_pas')
+        self.config.include('arche_pas.catalog')
+        self.config.include('arche_pas.models')
         root = barebone_fixture(self.config)
         request = testing.DummyRequest()
         self.config.begin(request)
@@ -168,7 +169,8 @@ class PASProviderTests(unittest.TestCase):
     def test_store(self):
         self.config.include('arche.testing')
         self.config.include('arche.testing.catalog')
-        self.config.include('arche_pas')
+        self.config.include('arche_pas.catalog')
+        self.config.include('arche_pas.models')
         root = barebone_fixture(self.config)
         request = testing.DummyRequest()
         apply_request_extensions(request)
@@ -193,7 +195,8 @@ class PASProviderTests(unittest.TestCase):
     def test_store_saves_new_keys(self):
         self.config.include('arche.testing')
         self.config.include('arche.testing.catalog')
-        self.config.include('arche_pas')
+        self.config.include('arche_pas.models')
+        self.config.include('arche_pas.catalog')
         root = barebone_fixture(self.config)
         request = testing.DummyRequest()
         apply_request_extensions(request)
