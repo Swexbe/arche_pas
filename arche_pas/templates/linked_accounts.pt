@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="view.macro('arche:templates/base_view.pt', 'arche:templates/inline.pt')"
+      tal:define="contents contents|None"
+      i18n:domain="Arche">
+<body>
+<div metal:fill-slot="main-content">
+
+    <h1 i18n:translate="">Linked accounts</h1>
+
+    <tal:has_providers condition="linked_providers">
+        <tal:iter repeat="provider linked_providers">
+            <tal:def define="users_id provider.get_id(context)|None">
+            ${provider.title}
+            <span tal:condition="users_id">
+
+                (id: ${users_id})
+            </span>
+            </tal:def>
+        </tal:iter>
+
+        <p tal:condition="context.password"
+           i18n:translate="">You have a password set for your account</p>
+
+        <p tal:condition="not context.password"
+           i18n:translate="">You have no password set for your account</p>
+
+        <p>
+            <a class="text-danger"
+               href="${request.resource_url(context, 'remove_pas')}"
+               i18n:translate="">
+                Clear data...
+            </a>
+        </p>
+
+    </tal:has_providers>
+
+    <tal:no_providers condition="not linked_providers">
+        <p>There are no linked accounts</p>
+    </tal:no_providers>
+
+    <tal:link_new condition="unlinked_providers">
+        <h2 i18n:translate="">Link new</h2>
+        <p i18n:translate="link_new_provider_description">
+            You may link your account to any of these providers to be able to login
+            via them or use features associated with them.</p>
+        <p>
+        <tal:iter repeat="provider unlinked_providers">
+            <a class="btn btn-primary btn-sm" href="${provider.begin_url()}">${provider.title}</a>
+        </tal:iter>
+        </p>
+    </tal:link_new>
+
+    <div class="well">
+        <a href="${request.resource_url(context)}"
+           class="btn btn-default"
+           i18n:translate="">Back to profile</a>
+    </div>
+
+</div>
+</body>
+</html>

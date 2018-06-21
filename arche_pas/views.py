@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
+from arche_pas import _
+from arche_pas import logger
+
 import deform
 from arche.events import ObjectUpdatedEvent
 from arche.interfaces import IEmailValidationTokens
-from arche.interfaces import IViewInitializedEvent
 from arche.interfaces import IUser
+from arche.interfaces import IViewInitializedEvent
 from arche.security import PERM_EDIT
 from arche.utils import get_content_schemas
 from arche.views.auth import LoginForm
@@ -20,10 +24,9 @@ from six import string_types
 from zope.component.event import objectEventNotify
 from zope.interface.interfaces import ComponentLookupError
 
-from arche_pas import _
-from arche_pas import logger
 from arche_pas.interfaces import IPASProvider
 from arche_pas.interfaces import IProviderData
+from arche_pas.models import UnknownProvider
 
 
 class BeginAuthView(BaseView):
@@ -224,6 +227,7 @@ class ConfirmLinkAccountPASForm(BaseForm):
 class RemovePASDataForm(BaseForm):
     type_name = 'PAS'
     schema_name = 'remove_data'
+    title = _("Remove data")
 
     @property
     def buttons(self):
@@ -240,7 +244,12 @@ class RemovePASDataForm(BaseForm):
             event = ObjectUpdatedEvent(self.context, changed = ['pas_ident'])
             objectEventNotify(event)
             self.flash_messages.add(_("Removed successfully"), type='success')
-        return HTTPFound(location=self.request.resource_url(self.context))
+        return HTTPFound(location=self.request.resource_url(self.context, 'pas_linked_accounts'))
+
+    def cancel_success(self, *args):
+        return HTTPFound(location=self.request.resource_url(self.context, 'pas_linked_accounts'))
+    cancel_failure = cancel_success
+
 
 
 class RedirectOnExceptionView(ExceptionView):
@@ -252,6 +261,36 @@ class RedirectOnExceptionView(ExceptionView):
         self.flash_messages.add(_("Something went wrong during login. Try again."),
                                 require_commit=False, type='danger')
         return HTTPFound(location=self.request.resource_url(self.context))
+
+
+class LinkedAccountsInfo(BaseView):
+
+    def __call__(self):
+        provider_data = IProviderData(self.context)
+        providers = dict(self.request.registry.getAdapters((self.request,), IPASProvider))
+        linked_providers = []
+        for name in provider_data:
+            linked_providers.append(providers.get(name, UnknownProvider(name)))
+        linked_providers.sort(key=lambda x: x.title.lower())
+        unlinked_providers = []
+        for name in providers:
+            if name not in provider_data:
+                unlinked_providers.append(providers[name])
+        unlinked_providers.sort(key=lambda x: x.title.lower())
+        return {'linked_providers': linked_providers,
+                'unlinked_providers': unlinked_providers,
+                'provider_data': provider_data}
+
+
+def linked_accounts_menu_item(context, request, va, **kw):
+    """
+    Render menu item in profile.
+    """
+    if IProviderData(request.profile, None):
+        return """
+    <li><a href="%s">%s</a></li>
+    """ % (request.resource_url(request.profile, 'pas_linked_accounts'),
+           request.localizer.translate(va.title))
 
 
 def inject_login_providers(view, event):
@@ -283,5 +322,11 @@ def includeme(config):
         context=OAuth2Error,
         xhr=False,
         renderer="arche_pas:templates/oauth_exception.pt")
+    config.add_view(LinkedAccountsInfo, context=IUser, name='pas_linked_accounts',
+                    renderer='arche_pas:templates/linked_accounts.pt', permission=PERM_EDIT)
+    config.add_view_action(
+        linked_accounts_menu_item, 'user_menu', 'pas_linked_accounts',
+        title=_("Linked accounts"), priority=30
+    )
     config.add_subscriber(inject_login_providers, [LoginForm, IViewInitializedEvent])
     config.add_subscriber(inject_login_providers, [RegisterForm, IViewInitializedEvent])

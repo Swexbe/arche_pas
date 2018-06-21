@@ -16,12 +16,25 @@ from zope.component import adapter
 from zope.component.event import objectEventNotify
 from zope.interface import implementer
 
+from arche_pas import _
 from arche_pas import logger
 from arche_pas.exceptions import ProviderConfigError
 from arche_pas.exceptions import RegistrationCaseMissmatch
 from arche_pas.interfaces import IPASProvider
 from arche_pas.interfaces import IProviderData
 from arche_pas.interfaces import IRegistrationCase
+
+
+class UnknownProvider(object):
+    """ Internal placeholder object for things that are missing/broken """
+
+    def __init__(self, name):
+        self.name = name
+
+    @property
+    def title(self):
+        return _("<Unknown provider '${name}'>", mapping = {'name': self.name})
+
 
 
 @implementer(IProviderData)

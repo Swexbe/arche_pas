@@ -100,6 +100,7 @@ class PASProviderTests(unittest.TestCase):
         self.assertEqual(factory.validate_settings(), None)
 
     def test_callback_url(self):
+        self.config.include('betahaus.viewcomponent')
         self.config.include('arche_pas.views')
         factory = self._dummy_provider()
         request = Request.blank('/')
