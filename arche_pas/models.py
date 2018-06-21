@@ -231,11 +231,15 @@ class PASProvider(object):
         return reg_case.callback(self, user, data)
 
     def login(self, user, first_login = False, came_from = None):
-        event = WillLoginEvent(user, request = self.request, first_login = first_login)
-        self.request.registry.notify(event)
+        self.notify_login(user, first_login=first_login)
         headers = remember(self.request, user.userid)
         url = came_from and came_from or self.request.resource_url(self.request.root)
         return HTTPFound(url, headers = headers)
+
+    def notify_login(self, user, first_login=False):
+        event = WillLoginEvent(
+            user, request=self.request, first_login=first_login, provider=self.name)
+        self.request.registry.notify(event)
 
     def store(self, user, data):
         assert IUser.providedBy(user)

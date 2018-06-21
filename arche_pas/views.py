@@ -218,6 +218,8 @@ class ConfirmLinkAccountPASForm(BaseForm):
                                   mapping={'provider_title': provider_title}),
                                 type="success")
         self.request.session.pop(self.reg_id, None)
+        # Treat this as a login, and fire that event
+        self.provider.notify_login(self.request.profile, first_login=False)
         redirect_url = self.request.session.pop('came_from', None)
         if redirect_url:
             return HTTPFound(location=redirect_url)
@@ -286,8 +288,7 @@ def linked_accounts_menu_item(context, request, va, **kw):
     """
     Render menu item in profile.
     """
-    if IProviderData(request.profile, None):
-        return """
+    return """
     <li><a href="%s">%s</a></li>
     """ % (request.resource_url(request.profile, 'pas_linked_accounts'),
            request.localizer.translate(va.title))
