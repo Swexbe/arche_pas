@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-03-20 14:05+0100\n"
-"PO-Revision-Date: 2018-03-20 14:11+0100\n"
+"POT-Creation-Date: 2018-06-26 15:15+0200\n"
+"PO-Revision-Date: 2018-06-26 15:18+0200\n"
 "Last-Translator: Robin Harms Oredsson <robin@betahaus.net>\n"
 "Language-Team: Swedish\n"
 "Language: sv\n"
@@ -40,67 +40,67 @@ msgstr ""
 "Det finns redan en användare registrerad här med din epostadress: '${email}’ "
 "Om det är ditt konto, logga in här först för att koppla ihop kontona."
 
-#: arche_pas/schemas.py:27
+#: arche_pas/models.py:36
 #, python-format
-msgid "<An unknown provider namned '${name}'>"
+msgid "<Unknown provider '${name}'>"
 msgstr ""
 
-#: arche_pas/schemas.py:34
+#: arche_pas/schemas.py:36
 msgid "Must be checked"
 msgstr "Måste markeras"
 
-#: arche_pas/schemas.py:40
+#: arche_pas/schemas.py:42
 msgid "Confirm"
 msgstr "Bekräfta"
 
-#: arche_pas/schemas.py:48
+#: arche_pas/schemas.py:50
 msgid "Remove password to disable password login?"
 msgstr "Radera lösenord för att stänga av lösenordsinloggning?"
 
 #. Default: You may set a new password through the 'Request password' page when
 #. you login, in case you loose the ability to login with other services.
-#: arche_pas/schemas.py:49
+#: arche_pas/schemas.py:51
 msgid "remove_password_description"
 msgstr ""
 "Du kan sätta ett nytt lösenord genom att klicka på ”Återställ lösenord” på "
 "inloggningssidan, om du tappar möjligheten att logga in med andra tjänster."
 
-#: arche_pas/schemas.py:56
+#: arche_pas/schemas.py:58
 msgid "Remove authentication?"
 msgstr "Ta bort autentisering?"
 
 #. Default: Warning: You may not login again with any service you remove here.
 #. However, you may tie existing accounts to a provider again, and login that
 #. way.
-#: arche_pas/schemas.py:57
+#: arche_pas/schemas.py:59
 msgid "providers_to_remove_description"
 msgstr ""
 "Varning: Du kan inte logga in igen med de tjänster du tar bort härifrån. Du "
 "kan däremot knyta detta konto till den tjänsten igen, och logga in på det "
 "sättet."
 
-#: arche_pas/views.py:37
+#: arche_pas/views.py:44
 msgid "No login provider with that name"
 msgstr "Det finns ingen extern inloggning med det namnet"
 
-#: arche_pas/views.py:52
+#: arche_pas/views.py:59
 #, python-format
 msgid "Logged in via ${provider}"
 msgstr "Inloggad via ${provider}"
 
-#: arche_pas/views.py:74
+#: arche_pas/views.py:81
 msgid "Complete registration"
 msgstr "Slutför registreringen"
 
-#: arche_pas/views.py:79
+#: arche_pas/views.py:86
 msgid "Already logged in."
 msgstr "Redan inloggad."
 
-#: arche_pas/views.py:83
+#: arche_pas/views.py:90
 msgid "Register"
 msgstr "Registrera"
 
-#: arche_pas/views.py:141
+#: arche_pas/views.py:148
 msgid "Email validation"
 msgstr "Epostvalidering"
 
@@ -108,7 +108,7 @@ msgstr "Epostvalidering"
 #. address. An email with a link has been sent to ${email}. Click the link to
 #. complete the proceedure. If you wish to change your email you may do so on
 #. your profile page.
-#: arche_pas/views.py:145
+#: arche_pas/views.py:152
 msgid "registered_but_needs_validation"
 msgstr ""
 "Du har registrerat dig men behöver validera din epostadress. Ett meddelande "
@@ -117,48 +117,48 @@ msgstr ""
 "profilsidan."
 
 #. Default: You're registered, but no email was found. Set one on your profile.
-#: arche_pas/views.py:155
+#: arche_pas/views.py:162
 msgid "registered_no_email"
 msgstr ""
 "Du är registrerad, men ingen epostadress hittades. Lägg till en via din "
 "profilsida."
 
-#: arche_pas/views.py:160
+#: arche_pas/views.py:167
 msgid "Welcome, you're now registered!"
 msgstr "Välkommen, du är nu registrerad!"
 
-#: arche_pas/views.py:172
+#: arche_pas/views.py:179
 msgid "Link account"
 msgstr "Länka konto"
 
-#: arche_pas/views.py:178
+#: arche_pas/views.py:185
 msgid "You need to be logged in to link an account"
 msgstr "Du behöver vara inloggad för att länka ditt konto"
 
-#: arche_pas/views.py:210
+#: arche_pas/views.py:217
 #, python-format
 msgid "You may now login with ${provider_title}."
 msgstr "Du kan nu logga in via ${provider_title}."
 
-#: arche_pas/views.py:226
+#: arche_pas/views.py:232
+msgid "Remove data"
+msgstr "Radera data"
+
+#: arche_pas/views.py:236
 msgid "Remove"
 msgstr "Radera"
 
-#: arche_pas/views.py:238
+#: arche_pas/views.py:248
 msgid "Removed successfully"
 msgstr "Borttaget"
 
-#: arche_pas/views.py:248
+#: arche_pas/views.py:263
 msgid "Something went wrong during login. Try again."
 msgstr "Något gick fel under inloggningen. Prova igen."
 
-#: arche_pas/providers/facebook.py:14
-msgid "Facebook"
-msgstr ""
-
-#: arche_pas/providers/google_oauth2.py:13
-msgid "Google"
-msgstr ""
+#: arche_pas/views.py:337 arche_pas/templates/linked_accounts.pt:12
+msgid "Linked accounts"
+msgstr "Länkade konton"
 
 #: arche_pas/providers/wp_oauth2.py:9
 msgid "OAuth2"
@@ -176,6 +176,34 @@ msgstr ""
 "Du är inloggad som ${userid} här. Om du länkar dina konton så kan du logga "
 "in via ${provider_title}."
 
+#: arche_pas/templates/linked_accounts.pt:26
+msgid "You have a password set for your account"
+msgstr "Du har ett lösenord satt på ditt konto"
+
+#: arche_pas/templates/linked_accounts.pt:29
+msgid "You have no password set for your account"
+msgstr "Du har inget lösenord satt"
+
+#: arche_pas/templates/linked_accounts.pt:34
+msgid "Clear data..."
+msgstr "Rensa data…"
+
+#: arche_pas/templates/linked_accounts.pt:46
+msgid "Link new"
+msgstr "Länka nytt"
+
+#. Default: You may link your account to any of these providers to be able to
+#. login via them or use features associated with them.
+#: arche_pas/templates/linked_accounts.pt:47
+msgid "link_new_provider_description"
+msgstr ""
+"Du kan länka ditt konto till någon av följande tjänster för att kunna logga "
+"in via dem eller använda andra länkade tjänster."
+
+#: arche_pas/templates/linked_accounts.pt:60
+msgid "Back to profile"
+msgstr "Tillbaka till profilsida"
+
 #: arche_pas/templates/oauth_exception.pt:13
 msgid "Login / Registration caused an error"
 msgstr "Login / Registrering orsakade ett fel"
@@ -192,3 +220,23 @@ msgstr ""
 msgid ""
 "arche.debug is set to True, so this error will be printed instead of logged."
 msgstr ""
+
+#: arche_pas/templates/providers_register.pt:6
+msgid "Quick register"
+msgstr "Snabbregistrera"
+
+#: arche_pas/templates/providers_register.pt:7
+msgid "via an existing account somewhere else"
+msgstr "via ett annat existerande konto"
+
+#: arche_pas/templates/providers_register.pt:14
+msgid "Or create a local account via your email"
+msgstr "Eller skapa ett lokalt konto via din epost"
+
+#: arche_pas/templates/providers_login.pt:6
+msgid "Use a linked external account"
+msgstr "Använd ett länkat externt konto"
+
+#: arche_pas/templates/providers_login.pt:13
+msgid "or login with your password"
+msgstr "eller logga in med ditt lösenord"
