@@ -296,14 +296,21 @@ def linked_accounts_menu_item(context, request, va, **kw):
 
 def inject_login_providers(view, event):
     """ Render login provider buttons before the login form. """
+    return inject_providers(view, "arche_pas:templates/providers_login.pt")
+
+
+def inject_register_providers(view, event):
+    """ Render registration provider buttons before the reg form. """
+    return inject_providers(view, "arche_pas:templates/providers_register.pt")
+
+
+def inject_providers(view, tpl):
     if not view.form_options.get('before_fields'):
         view.form_options['before_fields'] = ""
     request = view.request
     providers = tuple(request.registry.getAdapters((request,), IPASProvider))
     values = {'providers': providers}
-    tpl = 'arche_pas:templates/provider_links.pt'
     view.form_options['before_fields'] += render(tpl, values, request=request)
-
 
 def includeme(config):
     config.add_route('pas_begin', '/pas_begin/{provider}')
@@ -330,4 +337,4 @@ def includeme(config):
         title=_("Linked accounts"), priority=30
     )
     config.add_subscriber(inject_login_providers, [LoginForm, IViewInitializedEvent])
-    config.add_subscriber(inject_login_providers, [RegisterForm, IViewInitializedEvent])
+    config.add_subscriber(inject_register_providers, [RegisterForm, IViewInitializedEvent])

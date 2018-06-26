@@ -1,0 +1,15 @@
+<tal:main xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="arche_pas">
+    <div class="text-center">
+        <h4 class="text-center" i18n:translate="">Quick register</h4>
+        <p i18n:translate="">via an existing account somewhere else</p>
+            <tal:iter repeat="(name, provider) providers">
+                <a class="btn btn-primary" href="${provider.begin_url()}">${provider.title}</a>
+            </tal:iter>
+        </div>
+    <hr/>
+
+    <h4 class="text-center" i18n:translate="">Or create a local account via your email</h4>
+</tal:main>
