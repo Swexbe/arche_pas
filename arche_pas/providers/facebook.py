@@ -21,7 +21,7 @@ class FacebookOAuth2(PASProvider):
         "token_uri": "https://graph.facebook.com/oauth/access_token",
         # Scope doesn't seem to have any effect? The profile_uri does however
         "scope": ['email', 'public_profile'],
-        "profile_uri":"https://graph.facebook.com/me?fields=id,email,name,picture",
+        "profile_uri":"https://graph.facebook.com/me?fields=id,email,name,picture.type(large)",
         "approval_prompt":"force"
     }
 
