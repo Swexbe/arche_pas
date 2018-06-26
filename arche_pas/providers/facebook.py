@@ -11,7 +11,7 @@ from arche_pas import _
 
 class FacebookOAuth2(PASProvider):
     name = "facebook"
-    title = _("Facebook")
+    title = "Facebook"
     id_key = 'id'
     image_key = 'picture'
     trust_email = True

@@ -10,7 +10,7 @@ from arche_pas import _
 
 class GoogleOAuth2(PASProvider):
     name = "google_oauth2"
-    title = _("Google")
+    title = "Google"
     id_key = 'id'
     image_key = 'picture'
     trust_email = True
