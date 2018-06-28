@@ -4,8 +4,7 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       metal:use-macro="view.macro('arche:templates/base_view.pt', 'arche:templates/inline.pt')"
-      tal:define="contents contents|None"
-      i18n:domain="Arche">
+      i18n:domain="arche_pas">
 <body>
 <div metal:fill-slot="main-content">
 

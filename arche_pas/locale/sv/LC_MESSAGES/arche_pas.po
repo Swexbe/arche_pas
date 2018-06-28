@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-06-26 15:15+0200\n"
+"POT-Creation-Date: 2018-06-28 13:31+0200\n"
 "PO-Revision-Date: 2018-06-26 15:18+0200\n"
 "Last-Translator: Robin Harms Oredsson <robin@betahaus.net>\n"
 "Language-Team: Swedish\n"
@@ -156,7 +156,7 @@ msgstr "Borttaget"
 msgid "Something went wrong during login. Try again."
 msgstr "Något gick fel under inloggningen. Prova igen."
 
-#: arche_pas/views.py:337 arche_pas/templates/linked_accounts.pt:12
+#: arche_pas/views.py:337 arche_pas/templates/linked_accounts.pt:11
 msgid "Linked accounts"
 msgstr "Länkade konton"
 
@@ -176,31 +176,31 @@ msgstr ""
 "Du är inloggad som ${userid} här. Om du länkar dina konton så kan du logga "
 "in via ${provider_title}."
 
-#: arche_pas/templates/linked_accounts.pt:26
+#: arche_pas/templates/linked_accounts.pt:25
 msgid "You have a password set for your account"
 msgstr "Du har ett lösenord satt på ditt konto"
 
-#: arche_pas/templates/linked_accounts.pt:29
+#: arche_pas/templates/linked_accounts.pt:28
 msgid "You have no password set for your account"
 msgstr "Du har inget lösenord satt"
 
-#: arche_pas/templates/linked_accounts.pt:34
+#: arche_pas/templates/linked_accounts.pt:33
 msgid "Clear data..."
 msgstr "Rensa data…"
 
-#: arche_pas/templates/linked_accounts.pt:46
+#: arche_pas/templates/linked_accounts.pt:45
 msgid "Link new"
 msgstr "Länka nytt"
 
 #. Default: You may link your account to any of these providers to be able to
 #. login via them or use features associated with them.
-#: arche_pas/templates/linked_accounts.pt:47
+#: arche_pas/templates/linked_accounts.pt:46
 msgid "link_new_provider_description"
 msgstr ""
 "Du kan länka ditt konto till någon av följande tjänster för att kunna logga "
 "in via dem eller använda andra länkade tjänster."
 
-#: arche_pas/templates/linked_accounts.pt:60
+#: arche_pas/templates/linked_accounts.pt:59
 msgid "Back to profile"
 msgstr "Tillbaka till profilsida"
 
