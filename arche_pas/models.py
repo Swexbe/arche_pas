@@ -171,7 +171,11 @@ class PASProvider(object):
         return ""
 
     def begin_url(self):
-        return self.request.route_url('pas_begin', provider=self.name)
+        came_from = self.request.GET.get('came_from', '')
+        query = {}
+        if came_from:
+            query['came_from'] = came_from
+        return self.request.route_url('pas_begin', provider=self.name, _query=query)
 
     def callback(self): #pragma: no coverage
         return {}
