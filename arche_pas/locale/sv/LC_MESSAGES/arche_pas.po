@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-06-28 13:31+0200\n"
-"PO-Revision-Date: 2018-06-26 15:18+0200\n"
+"POT-Creation-Date: 2018-09-19 16:19+0200\n"
+"PO-Revision-Date: 2018-09-19 16:20+0200\n"
 "Last-Translator: Robin Harms Oredsson <robin@betahaus.net>\n"
 "Language-Team: Swedish\n"
 "Language: sv\n"
@@ -234,9 +234,12 @@ msgid "Or create a local account via your email"
 msgstr "Eller skapa ett lokalt konto via din epost"
 
 #: arche_pas/templates/providers_login.pt:6
-msgid "Use a linked external account"
-msgstr "Använd ett länkat externt konto"
+msgid "Login with"
+msgstr "Logga in med"
 
 #: arche_pas/templates/providers_login.pt:13
-msgid "or login with your password"
-msgstr "eller logga in med ditt lösenord"
+msgid "or with your password"
+msgstr "eller med ditt lösenord"
+
+#~ msgid "Use a linked external account"
+#~ msgstr "Använd ett länkat externt konto"

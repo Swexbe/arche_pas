@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2018-06-28 13:31+0200\n"
+"POT-Creation-Date: 2018-09-19 16:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -212,9 +212,9 @@ msgid "Or create a local account via your email"
 msgstr ""
 
 #: ./arche_pas/templates/providers_login.pt:6
-msgid "Use a linked external account"
+msgid "Login with"
 msgstr ""
 
 #: ./arche_pas/templates/providers_login.pt:13
-msgid "or login with your password"
+msgid "or with your password"
 msgstr ""
