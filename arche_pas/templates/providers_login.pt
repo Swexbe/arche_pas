@@ -3,12 +3,12 @@
   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
   i18n:domain="arche_pas">
     <div class="text-center">
-        <h4 class="text-center" i18n:translate="">Use a linked external account</h4>
+        <h4 class="text-center" i18n:translate="">Login with</h4>
             <tal:iter repeat="(name, provider) providers">
                 <a class="btn btn-primary" href="${provider.begin_url()}">${provider.title}</a>
             </tal:iter>
         </div>
     <hr/>
 
-    <h4 class="text-center" i18n:translate="">or login with your password</h4>
+    <h4 class="text-center" i18n:translate="">or with your password</h4>
 </tal:main>
