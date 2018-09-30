@@ -29,3 +29,4 @@ def get_pas_ident(context, default):
 def includeme(config):
     indexes = {'pas_ident': CatalogKeywordIndex(get_pas_ident),}
     config.add_catalog_indexes(__name__, indexes)
+    config.update_index_info('pas_ident', type_names = 'User')
