@@ -21,6 +21,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.renderers import render
 from six import string_types
+from transaction import commit
 from zope.component.event import objectEventNotify
 from zope.interface.interfaces import ComponentLookupError
 
@@ -166,6 +167,7 @@ class RegisterPASForm(BaseForm):
         else:
             self.flash_messages.add(_("Welcome, you're now registered!"), type="success")
         self.provider.store(user, self.provider_response)
+        commit()  # We want potential conflicts to be checked here. In case of errors this will abort login
         self.request.session.pop(self.reg_id, None)
         return self.provider.login(user, first_login = True, came_from = redirect_url)
 
