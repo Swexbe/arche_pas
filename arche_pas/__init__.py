@@ -14,13 +14,17 @@ DEFAULTS = {
 }
 
 
-def format_providers(txt):
+def format_providers(data):
     """ Read configuration option at arche_pas.providers, which should look something like:
         arche_pas.providers.googe_oauth2 /path/to/config.json
         someotherprovider /path/that/config.json
     """
     results = {}
-    for row in txt.splitlines():
+    if data is None:
+        data = []
+    elif not isinstance(data, list):
+        data = data.splitlines()
+    for row in data:
         row = row.strip()
         if row:
             package_name, file_name = row.split(None, 1)
