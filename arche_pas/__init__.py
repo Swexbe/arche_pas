@@ -33,6 +33,7 @@ def format_providers(data):
 
 
 def includeme(config):
+    from os import environ
     bools = ('arche_pas.insecure_transport',)
     settings = config.registry.settings
     settings['arche_pas.providers'] = providers = format_providers(settings.get('arche_pas.providers', ''))
@@ -45,11 +46,10 @@ def includeme(config):
     for k in bools:
         settings[k] = asbool(settings[k])
     if settings['arche_pas.insecure_transport']:
-        import os
-        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+        environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
         logger.warn('OAuthlib configured to allow insecure transport')
     # FIXME: Make this configurable
-    os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
+    environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
     config.include('.models')
     config.include('.catalog')
     config.include('.views')
