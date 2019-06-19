@@ -48,6 +48,8 @@ def includeme(config):
         import os
         os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
         logger.warn('OAuthlib configured to allow insecure transport')
+    # FIXME: Make this configurable
+    os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
     config.include('.models')
     config.include('.catalog')
     config.include('.views')
