@@ -11,7 +11,7 @@ from arche_pas import _
 class GoogleOAuth2(PASProvider):
     name = "google_oauth2"
     title = "Google"
-    id_key = 'id'
+    id_key = 'sub'
     image_key = 'picture'
     trust_email = True
     default_settings = {
@@ -19,9 +19,9 @@ class GoogleOAuth2(PASProvider):
         "token_uri":"https://accounts.google.com/o/oauth2/token",
         "scope":["https://www.googleapis.com/auth/userinfo.email",
                  "https://www.googleapis.com/auth/userinfo.profile"],
-        "profile_uri":"https://www.googleapis.com/oauth2/v1/userinfo",
+        "profile_uri": "https://www.googleapis.com/oauth2/v3/userinfo?alt=json",
         "access_type":"offline",
-        "approval_prompt":"force"
+        "approval_prompt":"force",
     }
 
     @classmethod
@@ -65,7 +65,7 @@ class GoogleOAuth2(PASProvider):
         email = response.get('email', None)
         if email:
             if validated:
-                if response.get('verified_email', False):
+                if response.get('email_verified', False):
                     return email
             else:
                 return email
