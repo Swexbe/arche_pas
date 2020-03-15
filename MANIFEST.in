@@ -1,0 +1,3 @@
+include *.txt *.cfg *.rst 
+recursive-include arche_pas *.css *.js *.png *.svg *.mo *.pt
+exclude buildout.cfg .installed.cfg
