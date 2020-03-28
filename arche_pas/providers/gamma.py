@@ -54,7 +54,7 @@ class GammaOAuth2(PASProvider):
         if not email:
             email = ''
         return dict(
-            first_name=fname + "'" + nick + "'",
+            first_name=fname + " '" + nick + "'",
             last_name=lname,
             email=email,
         )
