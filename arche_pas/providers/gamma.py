@@ -49,11 +49,12 @@ class GammaOAuth2(PASProvider):
     def registration_appstruct(self, response):
         fname = response.get('firstName', "")
         lname = response.get('lastName', "")
+        nick = response.get('nick', "")
         email = self.get_email(response)
         if not email:
             email = ''
         return dict(
-            first_name=fname,
+            first_name=fname + "'" + nick + "'",
             last_name=lname,
             email=email,
         )
