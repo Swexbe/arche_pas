@@ -7,7 +7,7 @@ from arche_pas import _
 class GammaOAuth2(PASProvider):
     name = "gamma"
     title = _("Gamma")
-    id_key = 'ID'
+    id_key = 'id'
     paster_config_ns = __name__
     default_settings = {
         "auth_uri": "https://gamma.chalmers.it/api/oauth/authorize",
