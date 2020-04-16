@@ -12,7 +12,6 @@ class GammaOAuth2(PASProvider):
     default_settings = {
         "auth_uri": "https://gamma.chalmers.it/api/oauth/authorize",
         "token_uri": "https://gamma.chalmers.it/api/oauth/token",
-        "token_uri": "https://graph.facebook.com/oauth/access_token",
         "profile_uri": "https://gamma.chalmers.it/api/users/me",
     }
     trust_email = True
