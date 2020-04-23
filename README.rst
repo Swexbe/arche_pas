@@ -8,18 +8,22 @@ Service for authentication using requests-oauthlib.
 
 Providers are initialized in your paster .ini using:
 
-| arche.includes =
-|     # To activate PAS module.
-|     arche\_pas
+.. code-block:: ini
 
-# Activate provider 'google\_oauth2' with data from var/google.json
+    arche.includes =
+        arche_pas
 
-| arche\_pas.providers
-|     arche\_pas.providers.gamma %(here)s/../var/gamma.json
 
-Example json setting file (gamma.json from above):
+Activate provider 'gamma' with data from var/gamma.json using:
 
-::
+.. code-block:: ini
+
+    arche_pas.providers =
+        arche_pas.providers.gamma %(here)s/../var/gamma.json
+
+Example gamma json settings file (gamma.json from above):
+
+.. code-block:: javascript
 
     {
       "client_id": "%GAMMA_CLIENT_ID%",
