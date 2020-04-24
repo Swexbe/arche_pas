@@ -48,8 +48,7 @@ class GammaOAuth2(PASProvider):
     def get_profile_image(self, response):
         try:
             url = response.get('avatarUrl', "")
-        if url:
-            return url
+        return url
 
     def registration_appstruct(self, response):
         fname = response.get('firstName', "")
