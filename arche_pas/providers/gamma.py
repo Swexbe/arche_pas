@@ -43,6 +43,7 @@ class GammaOAuth2(PASProvider):
         return profile_data
 
     def get_email(self, response, validated=False):
+        raise Exception("hello")
         return response.get('email', None)
 
     def get_profile_image(self, response):
