@@ -3,7 +3,9 @@ from requests_oauthlib import OAuth2Session
 from arche_pas.models import PASProvider
 from arche_pas import _
 
-
+f = open("/app/var/whitelist.txt", "r")
+whitelist = f.read().splitlines()
+f.close()
 class GammaOAuth2(PASProvider):
     name = "gamma"
     title = _("Gamma")
@@ -14,10 +16,7 @@ class GammaOAuth2(PASProvider):
         "token_uri": "https://gamma.chalmers.it/api/oauth/token",
         "profile_uri": "https://gamma.chalmers.it/api/users/me",
     }
-    trust_email = True
-    f = open("/app/var/whitelist.txt", "r")
-    whitelist = f.read().splitlines()
-    f.close()
+    trust_email = True 
 
     def begin(self):
         auth_session = OAuth2Session(
@@ -60,7 +59,7 @@ class GammaOAuth2(PASProvider):
         nick = response.get('nick', "")
         email = self.get_email(response)
         cid = response.get('cid', "")
-        if cid not in self.whitelist:
+        if cid not in whitelist:
             return
         if not email:
             email = ''
@@ -69,6 +68,7 @@ class GammaOAuth2(PASProvider):
             last_name=lname,
             email=email,
         )
+
 
 
 def includeme(config):
