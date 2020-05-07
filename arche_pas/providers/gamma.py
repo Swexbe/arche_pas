@@ -46,10 +46,7 @@ class GammaOAuth2(PASProvider):
         return profile_data
 
     def get_email(self, response, validated=False):
-        email = response.get('email', None);
-        cid = response.get('cid', None);
-        if cid not in self.whitelist:
-            raise Exception("User not in whitelist")
+        email = response.get('email', None)
         return email
 
     def get_profile_image(self, response):
@@ -62,6 +59,9 @@ class GammaOAuth2(PASProvider):
         lname = response.get('lastName', "")
         nick = response.get('nick', "")
         email = self.get_email(response)
+        cid = response.get('cid', "")
+        if cid not in self.whitelist:
+            return
         if not email:
             email = ''
         return dict(
