@@ -39,6 +39,12 @@ class GammaOAuth2(PASProvider):
         )
         profile_response = auth_session.get(self.settings['profile_uri'])
         profile_data = profile_response.json()
+        cid = profile_data.get('cid', "")
+        f = open("/app/var/whitelist.txt", "r")
+        whitelist = f.read().splitlines()
+        f.close()
+        if cid not in whitelist:
+            raise Exception("User not in whitelist")
         return profile_data
 
     def get_email(self, response, validated=False):
@@ -55,12 +61,6 @@ class GammaOAuth2(PASProvider):
         lname = response.get('lastName', "")
         nick = response.get('nick', "")
         email = self.get_email(response)
-        cid = response.get('cid', "")
-        f = open("/app/var/whitelist.txt", "r")
-        whitelist = f.read().splitlines()
-        f.close()
-        if cid not in whitelist:
-            return ""
         if not email:
             email = ''
         return dict(
