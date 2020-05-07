@@ -15,9 +15,8 @@ class GammaOAuth2(PASProvider):
         "profile_uri": "https://gamma.chalmers.it/api/users/me",
     }
     trust_email = True
-    whitelist = [];
-    with open('/app/var/whitelist.txt') as f:
-        whitelist = f.read().splitlines();
+    f = open('/app/var/whitelist.txt', "r");
+    whitelist = f.read().splitlines();
 
     def begin(self):
         auth_session = OAuth2Session(
