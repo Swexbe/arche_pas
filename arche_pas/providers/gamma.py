@@ -15,6 +15,9 @@ class GammaOAuth2(PASProvider):
         "profile_uri": "https://gamma.chalmers.it/api/users/me",
     }
     trust_email = True
+    whitelist = [];
+    with open('/app/var/whitelist.txt') as f:
+        whitelist = f.read().splitlines();
 
     def begin(self):
         auth_session = OAuth2Session(
@@ -44,8 +47,9 @@ class GammaOAuth2(PASProvider):
 
     def get_email(self, response, validated=False):
         email = response.get('email', None);
-        if email == "erik@swex.be":
-            raise Exception("hello")
+        cid = response.get('cid', None);
+        if cid not in self.whitelist:
+            raise Exception("User not in whitelist")
         return email
 
     def get_profile_image(self, response):
